@@ -1,13 +1,22 @@
-# Classic ML algorithms implemented from scratch via C++
+# Classic ML algorithms implemented from scratch in C++
 
 ## TODO:
 
-- [ ] Naive Bayes (Classifier/Regressor)
+- [ ] Gaussian Naive Bayes Classifier
+
+- [ ] KDE Naive Bayes
+
+- [ ] K-Nearest-Neighbors (Classifier/Regressor)
 
 - [ ] Linear Regression (No_regularization/Lasso/Ridge/Elastic_Net)
 
 - [ ] Logistic Regression
 
-- [ ] SVM (Classifier/Regressor)
+- [ ] SupportVectorClassifier
+
+- [ ] SupportVectorRegressor
 
 - [ ] Decision Tree
+
+- [ ] Random Forest
+
