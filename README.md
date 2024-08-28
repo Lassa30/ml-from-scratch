@@ -6,9 +6,11 @@
 
 - [ ] KDE Naive Bayes
 
-- [ ] K-Nearest-Neighbors (Classifier/Regressor)
+- [ ] K-Nearest-Neighbors Classifier
 
-- [ ] Linear Regression (No_regularization/Lasso/Ridge/Elastic_Net)
+- [ ] K-Means
+
+- [ ] Linear Regression
 
 - [ ] Logistic Regression
 
@@ -19,4 +21,3 @@
 - [ ] Decision Tree
 
 - [ ] Random Forest
-
