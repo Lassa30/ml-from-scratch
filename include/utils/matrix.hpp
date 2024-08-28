@@ -19,6 +19,7 @@ typedef std::shared_ptr<std::vector<double>> sPtr;
 
 // let epsilon be 2 * 2^-52 = 2^-51 ~ 4.4408921e-16
 // source: // https://stackoverflow.com/questions/13698927/compare-double-to-zero-using-epsilon
+
 #define EPSILON 4.4408921e-16 
 
 bool close_to(const double & lhs, const double & rhs) {
@@ -277,6 +278,10 @@ public:
         return *this * (1 / rhs);
     }
 
+    // Naive algorithm works very slow:
+    // 
+    // Strassen algorithm is going to be used.
+
     Matrix matmul(const Matrix & rhs) {
 
         if (cols_ != rhs.rows_) {
@@ -286,18 +291,24 @@ public:
         }
 
         Matrix product(rows_, rhs.cols_);
+
+        // Naive algorithm is better for small matrices. 
+        // source: wikipedia
+
         for (auto i = 0; i < rows_; ++i) {
+        
             for (auto j = 0; j < rhs.cols_; ++j) {
+
                 for (auto k = 0; k < cols_; ++k) {
                     product.get(i, j) += get(i, k) * rhs.get(k, j);
                 }
 
             }
         }
-        
+
         return product;
     }
-
+    
     Matrix sum(AXIS axis) {
         if (axis == AXIS::ROW || axis == AXIS::COLUMN) {
             size_t row_or_col = (axis == AXIS::ROW) ? rows_ : cols_;
@@ -324,6 +335,24 @@ public:
 
     double & get(size_t i, size_t j) const {
         return (*data_)[i * cols_ + j];
+    }
+
+    Matrix get_col(size_t col) {
+
+        if (col > cols_) {
+            throw std::logic_error("Wrong column index.\n");
+        }
+
+        vector<double> resColumn(rows_);
+        for (auto i = col; i < rows_ * cols_; i += cols_) {
+            resColumn[i / cols_] = (*data_)[i];
+        }
+
+        return Matrix(1, rows_, resColumn);
+    }
+
+    inline size_t size() const {
+        return cols_ * rows_;
     }
 
 };
