@@ -8,7 +8,7 @@
 #include <memory>
 #include <stdexcept>
 #include <limits>
-
+#include <iostream>
 
 
 namespace mlfs { // MLFS - MlFromScratch
@@ -30,12 +30,6 @@ class Matrix {
 private:
     // data storage
     sPtr data_ = nullptr;
-
-    // number of rows | ax0
-    size_t rows_ = 0;
-
-    // number of columns | ax1
-    size_t cols_ = 0;
 
     void swap(Matrix & rhs) noexcept {
         std::swap(rows_, rhs.rows_);
@@ -59,7 +53,12 @@ private:
     }
 
 public:
+    // number of rows | ax0
+    size_t rows_ = 0;
 
+    // number of columns | ax1
+    size_t cols_ = 0;
+    
     enum AXIS {
         ROW,
         COLUMN
@@ -173,7 +172,7 @@ public:
     }
 
     inline std::pair<size_t, size_t> shape() const { 
-        return {cols_, rows_};
+        return {rows_, cols_};
     }
 
     inline void reshape(const size_t & lhs, const size_t & rhs) {
@@ -337,7 +336,7 @@ public:
         return (*data_)[i * cols_ + j];
     }
 
-    Matrix get_col(size_t col) {
+    Matrix get_col(size_t col) const {
 
         if (col > cols_) {
             throw std::logic_error("Wrong column index.\n");
@@ -348,11 +347,21 @@ public:
             resColumn[i / cols_] = (*data_)[i];
         }
 
-        return Matrix(1, rows_, resColumn);
+        return Matrix(rows_, 1, resColumn);
     }
 
     inline size_t size() const {
         return cols_ * rows_;
+    }
+
+    inline void print_matrix() const noexcept {
+        std::cout << '{' << ' ';
+        for (auto i = 0; i < size(); ++i) {
+            if (i >= cols_ && i % cols_ == 0) std::cout << "  ";
+            std::cout << (*data_)[i] << ' ';
+            if (i % cols_ == cols_ - 1 && rows_ != 1 && i != size() - 1) std::cout << '\n';
+        }
+        std::cout << '}' << std::endl;
     }
 
 };

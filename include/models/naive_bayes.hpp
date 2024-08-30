@@ -3,18 +3,40 @@
 
 
 #include "../utils/matrix.hpp"
+
 #include <random>
 #include <set>
+#include <map>
 
 namespace mlfs {
 
 using namespace mlfs;
 
+
+class GaussianPDF {
+private:
+    double mean_ = 0;
+    double std_ = 0;
+
+public:
+
+    GaussianPDF(double mean, double stddev) 
+    : mean_{mean}
+    , std_{stddev} 
+    {};
+
+    double operator()(double x) const {
+        return -0.5 * std::log(2 * M_PI * std_ * std_) - (std::pow(x - mean_, 2) / (2 * std_ * std_));
+    }
+
+    double prob(double x) {
+        return std::exp(operator()(x));
+    }
+};
+
 // Naive Bayes Classifier that uses the Gaussian PDF as its core.
 class GaussianNaiveBayes {
 public:
-
-    template <typename T>
     void train(const Matrix & features, const Matrix & target) {
 
         // Exception handling
@@ -30,20 +52,97 @@ public:
             );
         }
 
-        // Core
+        // Go through each feature-column and 
+        //      if target == Class_label_i then add it to the new vector
+        //      then count std and mean for this vector
+        //      vuala: you can build a Gaussian PDF
 
-        std::vector<T> classLabels = get_labels(target);
-        for (auto i : get_labels) {
+        classLabels_ = get_labels(target);
+        distsForFeatures_.resize(features.shape().second);
+        labelsProbas_.resize(classLabels_.size());
 
-            for (auto i = 0; i < features.shape().second; i++) {
-                Matrix column = features.get_col(i);
+        std::cout << "FEATURES MATRIX:\n";
+        features.print_matrix();
+        std::cout << "TARGET:\n";
+        target.print_matrix();
 
-                // HERE!!!
+        for (auto i = 0; i < features.shape().second; i++) {
+            std::cout << "FEATURE NUMBER:     " << i << "\n\n";
+            
+            Matrix column = features.get_col(i);
+            column.print_matrix();
+
+
+            for (auto label : classLabels_) {
+                std::cout << "LABEL: " << label << '\n';
+
+                // counting labels
+                if (i == 0) {
+                    labelsProbas_[label] += 1;
+                }
+
+                // choosing suitable data from the feature column
+                std::vector<double> choosen;
+
+                std::cout << "CHOOSING PROCESS:\n";
+                for (auto j = 0; j < column.shape().first; ++j) {
+                    
+                    std::cout << label << ' ' << target.get(j, 0) << '\n';
+                    if (label == static_cast<int>(target.get(j, 0))) {
+                        std::cout << "choosen elem equal: " << column.get(j, 0) << '\n';
+                        choosen.push_back(column.get(j, 0));
+                    }
+                }
+
+                std::cout << "feature number: " << i << "\nchoosen vector: ";
+                for (auto elem : choosen) std::cout << elem << ' ';
+
+                double mean =
+                std::accumulate(choosen.begin(), choosen.end(), 0.0) / choosen.size();
+
+                double stddev = 0.0;
+                for (auto X : choosen) stddev += (X - mean) * (X - mean);
+                
+                // If we have only one choosen element everything will go the unpreffered way...
+
+                // adding small constant for numerical stability is important
+                if (choosen.size() == 1) stddev = std::sqrt(choosen[0] / 1000);
+                else {
+                    stddev /= choosen.size() - 1;
+                    stddev = std::sqrt(stddev) + 4 * EPSILON;
+                }
+                
+                
+                
+
+                distsForFeatures_[i].push_back(
+                    GaussianPDF(mean, stddev)
+                );
+
+                std::cout << "\ndist: " << '(' << mean << ' ' << stddev << ")\n";
+                std::cout << "----------------------------------------\n";
             }
         }
         
+        // Getting probabilities for each label:
+            // LabelProba =   ( LabelCount )
+            //              -------------------
+            //               ( NumberOfLabels )
 
+        std::cout << "Final label probas:\n";
+        for (auto & labProb : labelsProbas_) { 
+            labProb /= target.shape().first;
+            std::cout << "probas: " << labProb << '\n';
+
+            labProb = std::log(labProb);
+            std::cout << "log-probas: " << labProb << '\n';
+            
+        }
+        std::cout << '\n';
+
+        // The model is fitted now.
         isFitted_ = true;
+        labelsCnt_ = classLabels_.size();
     }
 
     Matrix predict(const Matrix & features) {
@@ -54,28 +153,67 @@ public:
             );
         }
 
+        // 1) go through feature matrix and for each feature in the row
+        //    calculate density(from pre-built Gaussian PDFs)
+        // 2) for each feature save calculations as the map: <class_label: proba>
+        // 3) find argmax and add it to the prediction vector
+        //    return Matrix(features.shape().first, 1, prediction)
+
+        std::cout << "\n------------------------------------------------------------\n";
+        std::cout << "PREDICT\n";
+
+        vector<double> prediction(features.shape().first);
+
+        std::vector<double> probas(labelsProbas_);
 
 
-    }   
+        std::cout << "INIT prob. value:\n";
+        for (auto prob : probas) std::cout << prob << ' ';
+        std::cout << '\n';
 
+        for (auto i = 0; i < features.rows_; ++i) {
 
+            for (auto j = 0; j < features.cols_; ++j) {
+                auto dist = distsForFeatures_[j];
+                
+                auto feature_i_j = features.get(i, j);
+
+                for (auto label : classLabels_) {
+                    probas[label] += dist[label](feature_i_j); 
+                }
+            }
+
+            prediction[i] = std::max_element(probas.begin(), probas.end()) - probas.begin();
+            probas = labelsProbas_;
+        }
+
+        return Matrix(prediction, Matrix::AXIS::ROW);
+    }
 private:
 
     bool isFitted_ = 0;
 
-    // Not computationally stable, log-likelihood is better.
-    std::vector<std::normal_distribution<double>> dists_ = {}; 
+    int labelsCnt_ = 0;
+    std::set<int> classLabels_;
+    std::vector<double> labelsProbas_;
 
-    template<typename T>
-    vector<T> get_labels(const Matrix & target) {
-        std::set<T> unique_labels;
+    // C * F - total amount of distributions
+    // C - class labels count
+    // F - features count
+
+    vector<vector<GaussianPDF>>  distsForFeatures_ = {}; 
+
+    std::set<int> get_labels(const Matrix & target) {
+        std::set<int> unique_labels;
 
         for (auto i = 0; i < target.size(); i++) {
-            unique_labels.insert(target[i]);
+            unique_labels.insert(static_cast<int>(target.get(1, i)));
         }
 
-        return std::vector<T>(unique_labels.begin(), unique_labels.end());
+        return unique_labels;
     }
+
+
 
 };
 
