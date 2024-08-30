@@ -8,7 +8,7 @@ typedef std::chrono::duration<double, std::milli> dur_ms;
 
 int main() {
     // Create vectors filled with random numbers
-    size_t vector_size = 25'000'000;
+    size_t vector_size = 1'000'000;
     double lower_bound = 0.0, upper_bound = 1.0;
 
     std::random_device rd;
@@ -22,8 +22,8 @@ int main() {
     for (auto& value : random_vector2) value = dis(gen);
 
     // Define matrices...
-    mlfs::Matrix mat1(5'000, 5'000, random_vector1);
-    mlfs::Matrix mat2(5'000, 5'000, random_vector2);
+    mlfs::Matrix mat1(1'000, 1'000, random_vector1);
+    mlfs::Matrix mat2(1'000, 1'000, random_vector2);
 
     // Run matmul
     auto start = measure::now();
@@ -40,6 +40,4 @@ int main() {
             // ~ 900ms of runtime
         // Third: Strassen's algorithm
             // maybe later...
-
-
 }
