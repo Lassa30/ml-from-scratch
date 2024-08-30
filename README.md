@@ -2,7 +2,7 @@
 
 ## TODO:
 
-- [ ] Gaussian Naive Bayes Classifier
+- [x] Gaussian Naive Bayes Classifier
 
 - [ ] KDE Naive Bayes
 
@@ -21,3 +21,7 @@
 - [ ] Decision Tree
 
 - [ ] Random Forest
+
+## Examples:
+
+- [ ] NaiveBayes: [Iris Fisher](https://www.kaggle.com/datasets/uciml/iris) classification
