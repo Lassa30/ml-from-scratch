@@ -2,7 +2,7 @@
 #define NAIVE_BAYES_HPP_08_28_24
 
 
-#include "../utils/matrix.hpp"
+#include <utils/matrix.hpp>
 
 #include <random>
 #include <set>
@@ -15,6 +15,7 @@ using namespace mlfs;
 
 class GaussianPDF {
 private:
+
     double mean_ = 0;
     double std_ = 0;
 
@@ -37,6 +38,10 @@ public:
 // Naive Bayes Classifier that uses the Gaussian PDF as its core.
 class GaussianNaiveBayes {
 public:
+
+    GaussianNaiveBayes() = default;
+    ~GaussianNaiveBayes() = default;
+    
     void train(const Matrix & features, const Matrix & target) {
 
         // Exception handling
@@ -61,21 +66,10 @@ public:
         distsForFeatures_.resize(features.shape().second);
         labelsProbas_.resize(classLabels_.size());
 
-        std::cout << "FEATURES MATRIX:\n";
-        features.print_matrix();
-        std::cout << "TARGET:\n";
-        target.print_matrix();
-
         for (auto i = 0; i < features.shape().second; i++) {
-            std::cout << "FEATURE NUMBER:     " << i << "\n\n";
-            
             Matrix column = features.get_col(i);
-            column.print_matrix();
-
 
             for (auto label : classLabels_) {
-                std::cout << "LABEL: " << label << '\n';
-
                 // counting labels
                 if (i == 0) {
                     labelsProbas_[label] += 1;
@@ -84,18 +78,11 @@ public:
                 // choosing suitable data from the feature column
                 std::vector<double> choosen;
 
-                std::cout << "CHOOSING PROCESS:\n";
                 for (auto j = 0; j < column.shape().first; ++j) {
-                    
-                    std::cout << label << ' ' << target.get(j, 0) << '\n';
                     if (label == static_cast<int>(target.get(j, 0))) {
-                        std::cout << "choosen elem equal: " << column.get(j, 0) << '\n';
                         choosen.push_back(column.get(j, 0));
                     }
                 }
-
-                std::cout << "feature number: " << i << "\nchoosen vector: ";
-                for (auto elem : choosen) std::cout << elem << ' ';
 
                 double mean =
                 std::accumulate(choosen.begin(), choosen.end(), 0.0) / choosen.size();
@@ -112,15 +99,9 @@ public:
                     stddev = std::sqrt(stddev) + 4 * EPSILON;
                 }
                 
-                
-                
-
                 distsForFeatures_[i].push_back(
                     GaussianPDF(mean, stddev)
                 );
-
-                std::cout << "\ndist: " << '(' << mean << ' ' << stddev << ")\n";
-                std::cout << "----------------------------------------\n";
             }
         }
         
@@ -129,16 +110,10 @@ public:
             //              -------------------
             //               ( NumberOfLabels )
 
-        std::cout << "Final label probas:\n";
         for (auto & labProb : labelsProbas_) { 
             labProb /= target.shape().first;
-            std::cout << "probas: " << labProb << '\n';
-
             labProb = std::log(labProb);
-            std::cout << "log-probas: " << labProb << '\n';
-            
         }
-        std::cout << '\n';
 
         // The model is fitted now.
         isFitted_ = true;
@@ -159,17 +134,9 @@ public:
         // 3) find argmax and add it to the prediction vector
         //    return Matrix(features.shape().first, 1, prediction)
 
-        std::cout << "\n------------------------------------------------------------\n";
-        std::cout << "PREDICT\n";
-
         vector<double> prediction(features.shape().first);
 
         std::vector<double> probas(labelsProbas_);
-
-
-        std::cout << "INIT prob. value:\n";
-        for (auto prob : probas) std::cout << prob << ' ';
-        std::cout << '\n';
 
         for (auto i = 0; i < features.rows_; ++i) {
 
@@ -212,9 +179,6 @@ private:
 
         return unique_labels;
     }
-
-
-
 };
 
 // Naive Bayes Classifier for Multinominally distributed data | used in text classification
