@@ -1,0 +1,2 @@
+add_executable(nb_iris naive_bayes_iris_classification.cpp)
+target_link_libraries(nb_iris nb)
