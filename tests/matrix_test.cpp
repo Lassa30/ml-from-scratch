@@ -1,6 +1,7 @@
+#include <utils/matrix.hpp>
+
 #include <iostream>
 #include <chrono>
-#include "../include/utils/matrix.hpp"
 #include <random>
 
 typedef std::chrono::high_resolution_clock measure;

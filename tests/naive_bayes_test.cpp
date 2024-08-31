@@ -1,45 +1,55 @@
-#include "../include/models/naive_bayes.hpp"
-#include "../include/utils/matrix.hpp"
+#include <models/naive_bayes.hpp>
+#include <utils/matrix.hpp>
+
+#include <random>
 
 int main() {
-    mlfs::Matrix iris_features_train = mlfs::Matrix(3, 4, {5.1, 3.5, 1.4, 0.2, 
-                                                           6.1, 2.8, 4.7, 1.2, 
-                                                           6.4, 3.0 ,5.6, 2.2}
-    );
-    mlfs::Matrix iris_target_train = mlfs::Matrix({0, 1, 2}, mlfs::Matrix::AXIS::COLUMN);
+    // random config
 
-    mlfs::Matrix iris_features_test = mlfs::Matrix(3, 4, {5.1, 3.5, 1.4, 0.2, 
+    std::srand(42);
+    const int size = 1000;
+    auto randomNoise = std::vector<double>(size);
+    for (auto & randomNumber : randomNoise) {
+        auto num = std::rand();
+        randomNumber = (num % 2 == 0) ? std::rand() * 1.0 / RAND_MAX : std::rand() * -1.0 / RAND_MAX;
+    }
+
+    auto randomNoiseSum = std::accumulate(randomNoise.begin(), randomNoise.end(), 0.0) / size;
+    std::cout << "RandomNoise: " << randomNoiseSum << '\n';
+
+    // Matrix init
+    mlfs::Matrix irisFeaturesTrain = mlfs::Matrix(3, 4, {5.1, 3.5, 1.4, 0.2, 
                                                            6.1, 2.8, 4.7, 1.2, 
                                                            6.4, 3.0 ,5.6, 2.2}
     );
+    mlfs::Matrix irisTargetTrain = mlfs::Matrix({0, 1, 2}, mlfs::Matrix::AXIS::COLUMN);
+
+    std::cout << "Train design matrix:\n";
+    irisFeaturesTrain.print_matrix();
+    std::cout << std::endl;
+
+    mlfs::Matrix irisFeaturesTest = irisFeaturesTrain;
+
+    irisFeaturesTest += randomNoiseSum;
+
     mlfs::Matrix iris_target_test = mlfs::Matrix({0, 1, 2}, mlfs::Matrix::AXIS::COLUMN);
 
+    // Train
     auto nb = mlfs::GaussianNaiveBayes();
-    nb.train(iris_features_train, iris_target_train);
+    nb.train(irisFeaturesTrain, irisTargetTrain);
     
-    auto res = nb.predict(iris_features_test);
+    // Test
+    auto prediction = nb.predict(irisFeaturesTest);
 
-    res.print_matrix();
+    std::cout << "Test design matrix:\n";
+    irisFeaturesTest.print_matrix();
+    std::cout << std::endl;
 
+    std::cout << "Test prediction:\n";
+    prediction.print_matrix();
+    std::cout << std::endl;
+
+    std::cout << "Test target:\n";
     iris_target_test.print_matrix();
+    std::cout << std::endl;
 }
-
-/* 
-setosa:
-5.1, 3.5, 1.4, 0.2
-
-4.6, 3.4, 1.4, 0.3
-versicolor:
-6.1, 2.8, 4.7, 1.2
-
-6.4, 2.9, 4.3, 1.4
-virginica:
-6.4, 2.8 ,5.6, 2.2
-
-6.7, 3.0, 5.2, 2.3
-
-
-{4.6, 3.4, 1.4, 0.3,
-6.4, 2.9, 4.3, 1.4,
-6.7, 3.0, 5.2, 2.3}
-*/
