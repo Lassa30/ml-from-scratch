@@ -24,4 +24,4 @@
 
 ## Examples:
 
-- [ ] NaiveBayes: [Iris Fisher](https://www.kaggle.com/datasets/uciml/iris) classification
+- [x] [NaiveBayes: Iris Fisher classification](https://github.com/Lassa30/ml-from-scratch/blob/main/examples/naive_bayes_iris_classification.cpp)
