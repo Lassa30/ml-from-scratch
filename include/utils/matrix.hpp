@@ -85,13 +85,19 @@ public:
         , cols_{columns}
     {
 
-        if (rows_ * cols_ != rhs.size()) {
-            throw std::logic_error(
-                "Unable to construct a Matrix with these parameters: rows_ * cols_ != rhs.size()\n"
-            );
+        if (rows_ * cols_ == rhs.size()) {
+            data_ = std::make_shared<vector<double>>(rhs);
+        }else if (rows_ * cols_ < rhs.size()){
+            *data_ = vector<double>();
+            for (auto i = 0; i < rows; ++i) {
+                for (auto j = 0; j < columns; ++j) {
+                    data_->push_back(rhs[i * rows_ + j]);
+                }
+            }
+        }else {
+            throw std::logic_error("Matrix(const size_t & rows, const size_t & columns, const vector<double> & rhs):\n\tVector size is less than rows*columns\n");
         }
-
-        data_ = std::make_shared<vector<double>>(rhs);
+        
     }
 
     // flat-vector-constructor
@@ -350,6 +356,19 @@ public:
         return Matrix(rows_, 1, resColumn);
     }
 
+    Matrix get_row(size_t row) const {
+        if (row > rows_) {
+            throw std::logic_error("Matrix get_row(size_t row) const:\nWrong column index.\n");
+        }
+
+        vector<double> resColumn;
+        for (auto i = 0; i < cols_; ++i) {
+            resColumn.push_back(get(row, i));
+        }
+
+        return Matrix(1, cols_, resColumn);
+    }
+
     inline size_t size() const {
         return cols_ * rows_;
     }
@@ -362,6 +381,10 @@ public:
             if (i % cols_ == cols_ - 1 && rows_ != 1 && i != size() - 1) std::cout << '\n';
         }
         std::cout << '}' << std::endl;
+    }
+
+    std::vector<double> get_data() {
+        return *data_;
     }
 
 };
