@@ -11,38 +11,48 @@
 #include <set>
 #include <random>
 
-void genIdx(std::set<int>& idxSet, const int left, const int right, const int cnt, int randomState = 42) {
+void genIdx(std::set<int> &idxSet, const int left, const int right, const int cnt, int randomState = 42)
+{
     int setSize = 0;
 
     std::mt19937 gen(randomState);
     std::uniform_int_distribution<> dis(left, right);
 
-    while (setSize < cnt) {
+    while (setSize < cnt)
+    {
         int num = dis(gen);
-        if (idxSet.insert(num).second) {
+        if (idxSet.insert(num).second)
+        {
             ++setSize;
         }
     }
 }
 
-void vectFromIdx(std::vector<double>& vect, const std::set<int>& setIdx, const mlfs::Matrix& designMatrixTrain) {
-    for (auto i : setIdx) {
+void vectFromIdx(std::vector<double> &vect, const std::set<int> &setIdx, const mlfs::Matrix &designMatrixTrain)
+{
+    for (auto i : setIdx)
+    {
         std::vector<double> toPush(designMatrixTrain.get_row(i).get_data());
         vect.insert(vect.end(), toPush.begin(), toPush.end());
     }
 }
 
-int main() {
+int main()
+{
     // DataSet is modified using python script. see: ../data
     std::vector<double> dataset;
     mlfs::utils::dataFromCsv(dataset, "../examples/data/IrisModified.csv");
     std::vector<double> features;
     std::vector<double> target;
 
-    for (int i = 0; i < dataset.size(); ++i) {
-        if (i % 5 == 4) {
+    for (int i = 0; i < dataset.size(); ++i)
+    {
+        if (i % 5 == 4)
+        {
             target.push_back(dataset[i]);
-        }else {
+        }
+        else
+        {
             features.push_back(dataset[i]);
         }
     }
@@ -61,14 +71,15 @@ int main() {
 
     std::cout << "Accuracy on train: " << mlfs::utils::accuracyScore(prediction, targetColumn) << '\n';
 
-    std::cout << "\n\nTrain data prediction isn't the best way to check the model performance.\n" \
+    std::cout << "\n\nTrain data prediction isn't the best way to check the model performance.\n"
               << "Let's split the data into train and test and evaluate the model.\n";
 
-    // 150 * 0.7 = 105 -> 35 35 35 
-    // 150 * 0.3 = 45 -> 15 15 15 
-    
+    // 150 * 0.7 = 105 -> 35 35 35
+    // 150 * 0.3 = 45 -> 15 15 15
+
     std::set<int> datasetIdx;
-    for (int i = 0; i < 150; i++) {
+    for (int i = 0; i < 150; i++)
+    {
         datasetIdx.insert(i);
     }
 
@@ -85,8 +96,7 @@ int main() {
 
     std::set_difference(datasetIdx.begin(), datasetIdx.end(),
                         trainIdx.begin(), trainIdx.end(),
-                        std::inserter(testIdx, testIdx.begin())
-    );
+                        std::inserter(testIdx, testIdx.begin()));
 
     // std::cout << "2) The test set has size: " << testIdx.size() << '\n';
     // for (auto i : testIdx) std::cout << i << ' ';
@@ -103,7 +113,7 @@ int main() {
     vectFromIdx(targetTest, testIdx, targetColumn);
 
     mlfs::GaussianNaiveBayes NB{};
-    
+
     designMatrixTrain = std::move(mlfs::Matrix(105, 4, featuresTrain));
     auto targetTrainColumn = std::move(mlfs::Matrix(105, 1, targetTrain));
 
@@ -117,8 +127,5 @@ int main() {
     prediction.print_matrix();
     std::cout << std::string(64, '-') << std::endl;
 
-    std::cout << "Accuracy on test: " 
-              << mlfs::utils::accuracyScore(prediction, targetTestColumn) 
-              << "\n\n";
-
+    std::cout << "Accuracy on test: " << mlfs::utils::accuracyScore(prediction, targetTestColumn) << "\n";
 }

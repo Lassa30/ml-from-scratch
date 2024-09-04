@@ -3,13 +3,15 @@
 
 #include <random>
 
-int main() {
+int main()
+{
     // random config
 
     std::srand(42);
     const int size = 1000;
     auto randomNoise = std::vector<double>(size);
-    for (auto & randomNumber : randomNoise) {
+    for (auto &randomNumber : randomNoise)
+    {
         auto num = std::rand();
         randomNumber = (num % 2 == 0) ? std::rand() * 1.0 / RAND_MAX : std::rand() * -1.0 / RAND_MAX;
     }
@@ -18,10 +20,7 @@ int main() {
     std::cout << "RandomNoise: " << randomNoiseSum << '\n';
 
     // Matrix init
-    mlfs::Matrix irisFeaturesTrain = mlfs::Matrix(3, 4, {5.1, 3.5, 1.4, 0.2, 
-                                                           6.1, 2.8, 4.7, 1.2, 
-                                                           6.4, 3.0 ,5.6, 2.2}
-    );
+    mlfs::Matrix irisFeaturesTrain = mlfs::Matrix(3, 4, {5.1, 3.5, 1.4, 0.2, 6.1, 2.8, 4.7, 1.2, 6.4, 3.0, 5.6, 2.2});
     mlfs::Matrix irisTargetTrain = mlfs::Matrix({0, 1, 2}, mlfs::Matrix::AXIS::COLUMN);
 
     std::cout << "Train design matrix:\n";
@@ -37,7 +36,7 @@ int main() {
     // Train
     auto nb = mlfs::GaussianNaiveBayes();
     nb.train(irisFeaturesTrain, irisTargetTrain);
-    
+
     // Test
     auto prediction = nb.predict(irisFeaturesTest);
 
