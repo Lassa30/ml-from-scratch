@@ -15,21 +15,17 @@ add_library(nb INTERFACE ../include/models/naive_bayes.hpp)
 
 add_library(utils INTERFACE ../include/utils/utils.hpp)
 
+add_library(linear_regression INTERFACE ../include/models/linear_regression.hpp)
+
+set(MLFS_HEADERS nb linear_regression matrix utils)
+
 # include directories
-target_include_directories(matrix INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-
-target_include_directories(nb INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-
-target_include_directories(utils INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
+foreach(mlfs_header IN LISTS MLFS_HEADERS)
+    target_include_directories(${mlfs_header} INTERFACE 
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+    )   
+endforeach()
 
 # subdirectories
 add_subdirectory(tests)
