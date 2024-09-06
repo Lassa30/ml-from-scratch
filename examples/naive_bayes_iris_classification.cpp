@@ -11,31 +11,7 @@
 #include <set>
 #include <random>
 
-void genIdx(std::set<int> &idxSet, const int left, const int right, const int cnt, int randomState = 42)
-{
-    int setSize = 0;
-
-    std::mt19937 gen(randomState);
-    std::uniform_int_distribution<> dis(left, right);
-
-    while (setSize < cnt)
-    {
-        int num = dis(gen);
-        if (idxSet.insert(num).second)
-        {
-            ++setSize;
-        }
-    }
-}
-
-void vectFromIdx(std::vector<double> &vect, const std::set<int> &setIdx, const mlfs::Matrix &designMatrixTrain)
-{
-    for (auto i : setIdx)
-    {
-        std::vector<double> toPush(designMatrixTrain.get_row(i).get_data());
-        vect.insert(vect.end(), toPush.begin(), toPush.end());
-    }
-}
+using namespace mlfs::utils;
 
 int main()
 {

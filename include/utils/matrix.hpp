@@ -2,18 +2,18 @@
 #define MATRIX_HPP_d08_m26_y24
 
 #include <algorithm>
-#include <sstream>
+#include <cmath>
 #include <cstddef>
-#include <vector>
-#include <memory>
-#include <stdexcept>
-#include <limits>
 #include <iostream>
+#include <limits>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <vector>
+#include <numeric>
 
 namespace mlfs
 { // MLFS - MlFromScratch
-
-    using std::vector, std::size_t;
 
     typedef std::shared_ptr<std::vector<double>> sPtr;
 
@@ -40,7 +40,7 @@ namespace mlfs
             std::swap(data_, rhs.data_);
         }
 
-        std::string shape_err_msg(const std::string &method, const Matrix &rhs)
+        std::string shape_err_msg(const std::string &method, const Matrix &rhs) const
         {
             std::stringstream err_msg;
 
@@ -58,10 +58,9 @@ namespace mlfs
 
     public:
         // number of rows | ax0
-        size_t rows_ = 0;
-
+        std::size_t rows_ = 0;
         // number of columns | ax1
-        size_t cols_ = 0;
+        std::size_t cols_ = 0;
 
         enum AXIS
         {
@@ -73,7 +72,7 @@ namespace mlfs
         Matrix() {};
 
         // fill-constructor: fill the Matrix with the value
-        Matrix(const size_t &rows, const size_t &columns)
+        Matrix(const std::size_t &rows, const std::size_t &columns)
             : cols_{columns}, rows_{rows}
         {
             data_ = std::make_shared<std::vector<double>>(cols_ * rows_);
@@ -81,8 +80,8 @@ namespace mlfs
 
         // from-data-ctor
         Matrix(
-            const size_t &rows,
-            const size_t &columns,
+            const std::size_t &rows,
+            const std::size_t &columns,
             const std::vector<double> &rhs)
 
             : rows_{rows}, cols_{columns}
@@ -94,18 +93,18 @@ namespace mlfs
             }
             else if (rows_ * cols_ < rhs.size())
             {
-                *data_ = std::vector<double>();
-                for (auto i = 0; i < rows; ++i)
+                data_ = std::make_shared<std::vector<double>>();
+                for (auto i = 0; i < rows_; ++i)
                 {
-                    for (auto j = 0; j < columns; ++j)
+                    for (auto j = 0; j < cols_; ++j)
                     {
-                        data_->push_back(rhs[i * rows_ + j]);
+                        data_->push_back(rhs[i * cols_ + j]);
                     }
                 }
             }
             else
             {
-                throw std::logic_error("Matrix(const size_t & rows, const size_t & columns, const std::vector<double> & rhs):\n\tstd::vector size is less than rows*columns\n");
+                throw std::logic_error("Matrix(const std::size_t & rows, const std::size_t & columns, const std::vector<double> & rhs):\n\tstd::vector size is less than rows*columns\n");
             }
         }
 
@@ -155,7 +154,7 @@ namespace mlfs
             // copy 'n' swap
             if (this != &rhs)
             {
-                Matrix cp(rhs);
+                Matrix cp = rhs.copy();
 
                 swap(cp);
             }
@@ -163,9 +162,9 @@ namespace mlfs
         };
 
         // Deep Copy member function for special cases
-        Matrix copy()
+        Matrix copy() const
         {
-            Matrix deepcopy(rows_, cols_);
+            Matrix deepcopy(rows_, cols_, std::vector<double>(size()));
 
             std::copy(
                 data_->begin(),
@@ -192,12 +191,12 @@ namespace mlfs
             return *this;
         }
 
-        inline std::pair<size_t, size_t> shape() const
+        inline std::pair<std::size_t, std::size_t> shape() const
         {
             return {rows_, cols_};
         }
 
-        inline void reshape(const size_t &lhs, const size_t &rhs)
+        inline void reshape(const std::size_t &lhs, const std::size_t &rhs)
         {
             if (lhs * rhs == 0)
             {
@@ -237,6 +236,22 @@ namespace mlfs
             return *this;
         }
 
+        Matrix &operator-=(const Matrix &rhs)
+        {
+            if (!(rows_ == rhs.rows_ && cols_ == rhs.cols_))
+            {
+                throw std::logic_error(
+                    shape_err_msg("Matrix & operator-=(const Matrix &rhs)", rhs));
+            }
+
+            for (auto i = 0; i < size(); ++i)
+            {
+                (*data_)[i] -= (*rhs.data_)[i];
+            }
+
+            return *this;
+        }
+
         Matrix &operator*=(const double &rhs)
         {
             std::for_each(data_->begin(),
@@ -261,24 +276,31 @@ namespace mlfs
             return *this;
         }
 
-        Matrix operator+(const double &rhs)
+        Matrix operator+(const double &rhs) const
         {
             Matrix temp(rows_, cols_);
             temp += rhs;
             return temp;
         }
 
-        Matrix operator+(const Matrix &rhs)
+        Matrix operator+(const Matrix &rhs) const
         {
-            Matrix temp = copy();
+            Matrix temp(rows_, cols_, std::vector<double>(size()));
             temp += rhs;
             return temp;
         }
 
-        Matrix operator-()
+        Matrix operator-(const Matrix &rhs) const
+        {
+            Matrix temp = copy();
+            temp -= rhs;
+            return temp;
+        }
+
+        Matrix operator-() const
         {
             std::vector<double> temp(rows_ * cols_);
-            size_t i = 0;
+            std::size_t i = 0;
 
             std::for_each(temp.begin(),
                           temp.end(),
@@ -288,14 +310,29 @@ namespace mlfs
             return Matrix(rows_, cols_, temp);
         }
 
-        Matrix operator*(const double &rhs)
+        Matrix operator*(const double &rhs) const
         {
             Matrix temp = copy();
             temp *= rhs;
             return temp;
         }
 
-        Matrix operator/(const double &rhs)
+        Matrix operator*(const Matrix &rhs) const 
+        {
+            if (!(cols_ == rhs.cols_ && rows_ == rhs.rows_)) {
+                throw std::logic_error("Matrices should have equal shapes.\n");
+            }
+
+            std::vector<double> cp(size(), 1.0);
+            for (auto i = 0; i < size(); i++)
+            {
+                cp[i] *= (*data_)[i] * (*rhs.data_)[i];
+            }
+
+            return Matrix(rows_, cols_, cp);
+        }
+
+        Matrix operator/(const double &rhs) const
         {
             if (close_to(rhs, 0.0))
             {
@@ -306,13 +343,13 @@ namespace mlfs
                     std::to_string(rhs) + '\n');
             }
 
-            return *this * (1 / rhs);
+            return *this * (1.0 / rhs);
         }
 
         // Naive algorithm works slow:
         // Strassen algorithm is going to be used.
 
-        Matrix matmul(const Matrix &rhs)
+        Matrix matmul(const Matrix &rhs) const
         {
 
             if (cols_ != rhs.rows_)
@@ -346,7 +383,7 @@ namespace mlfs
         {
             if (axis == AXIS::ROW || axis == AXIS::COLUMN)
             {
-                size_t row_or_col = (axis == AXIS::ROW) ? rows_ : cols_;
+                std::size_t row_or_col = (axis == AXIS::ROW) ? rows_ : cols_;
 
                 std::vector<double> result(row_or_col);
 
@@ -364,18 +401,18 @@ namespace mlfs
 
         Matrix mean(AXIS axis)
         {
-            size_t row_or_col = (axis == AXIS::ROW) ? rows_ : cols_;
+            std::size_t row_or_col = (axis == AXIS::ROW) ? rows_ : cols_;
             return sum(axis) / double(row_or_col);
         }
 
         /*end: Arithmetics*/
 
-        double &get(size_t i, size_t j) const
+        double &get(std::size_t i, std::size_t j) const
         {
             return (*data_)[i * cols_ + j];
         }
 
-        Matrix get_col(size_t col) const
+        Matrix get_col(std::size_t col) const
         {
 
             if (col > cols_)
@@ -392,11 +429,11 @@ namespace mlfs
             return Matrix(rows_, 1, resColumn);
         }
 
-        Matrix get_row(size_t row) const
+        Matrix get_row(std::size_t row) const
         {
             if (row > rows_)
             {
-                throw std::logic_error("Matrix get_row(size_t row) const:\nWrong column index.\n");
+                throw std::logic_error("Matrix get_row(std::size_t row) const:\nWrong column index.\n");
             }
 
             std::vector<double> resColumn;
@@ -408,7 +445,7 @@ namespace mlfs
             return Matrix(1, cols_, resColumn);
         }
 
-        inline size_t size() const
+        inline std::size_t size() const
         {
             return cols_ * rows_;
         }
@@ -431,7 +468,41 @@ namespace mlfs
         {
             return *data_;
         }
-    };
-} // namespace mlfs - MlFromScratch
 
+        Matrix T() const
+        {
+            std::vector<double> transpose(size());
+            if (rows_ == 1 || cols_ == 1)
+            {
+                return Matrix(cols_, rows_, *data_);
+            }
+
+            std::size_t cnt = 0;
+            for (auto i : *data_)
+            {
+                transpose[cnt % cols_ * rows_ + cnt / cols_] = i;
+                cnt++;
+            }
+
+            return Matrix(cols_, rows_, transpose);
+        }
+
+        double sum() const {
+            return std::accumulate(data_->begin(), data_->end(), 0.0);
+        }
+
+        // double det()
+        // {
+        // }
+
+        // Matrix inverse()
+        // {
+
+        // }
+
+        // Matrix adj()
+        // {
+        // }
+    }; // namespace mlfs - MlFromScratch
+}
 #endif // MATRIX_HPP_d08_m26_y24

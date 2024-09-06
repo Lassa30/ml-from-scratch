@@ -2,7 +2,7 @@ add_executable(matrix_test matrix_test.cpp)
 target_link_libraries(matrix_test matrix)
 
 add_executable(naive_bayes_test naive_bayes_test.cpp)
-target_link_libraries(naive_bayes_test nb)
+target_link_libraries(naive_bayes_test nb matrix)
 
 add_executable(linear_regression_test linear_regression_test.cpp)
-target_link_libraries(linear_regression_test linear_regression)
+target_link_libraries(linear_regression_test linear_regression matrix)

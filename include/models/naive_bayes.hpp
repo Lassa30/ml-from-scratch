@@ -140,7 +140,7 @@ namespace mlfs
             // 3) find argmax and add it to the prediction vector
             //    return Matrix(features.shape().first, 1, prediction)
 
-            vector<double> prediction(features.shape().first);
+            std::vector<double> prediction(features.shape().first);
 
             std::vector<double> probas(labelsProbas_);
 
@@ -177,7 +177,7 @@ namespace mlfs
         // C - class labels count
         // F - features count
 
-        vector<vector<GaussianPDF>> distsForFeatures_ = {};
+        std::vector<std::vector<GaussianPDF>> distsForFeatures_ = {};
 
         std::set<int> get_labels(const Matrix &target)
         {

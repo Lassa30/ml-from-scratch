@@ -36,6 +36,15 @@ int main()
     dur_ms duration = end - start;
     std::cout << "Execution time: " << duration.count() << " ms" << std::endl;
 
+    std::cout << "Transpose testing.\nBefore T():\n";
+    auto transposeTest = mlfs::Matrix(3, 2, {1, 2, 3, 4, 5, 6});
+    transposeTest.print_matrix();
+    std::cout << "After T():\n";
+    transposeTest.T().print_matrix();
+
+    transposeTest = mlfs::Matrix(3, 3, {1, 2, 3, 4, 5, 6, 7, 8, 9});
+    transposeTest.T().print_matrix();
+
     // Benchmarks:
     // square matrices: 1'000 x 1'000
     // First: naive algorithm:
