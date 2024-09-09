@@ -1,27 +1,33 @@
 # Classic ML algorithms implemented from scratch in C++
 
-## TODO:
+## TODO
 
-- [x] Gaussian Naive Bayes Classifier
+- [x] [Gaussian Naive Bayes Classifier](https://github.com/Lassa30/ml-from-scratch/blob/main/include/models/naive_bayes.hpp)
 
-- [ ] KDE Naive Bayes
+- [x] [Linear Regression](https://github.com/Lassa30/ml-from-scratch/blob/main/include/models/linear_regression.hpp)
+
+    - [ ] Lasso
+
+    - [ ] Ridge
 
 - [ ] K-Nearest-Neighbors Classifier
 
-- [ ] K-Means
-
-- [ ] Linear Regression
-
 - [ ] Logistic Regression
 
-- [ ] SupportVectorClassifier
+-[ ] SupportVectorsMachine
 
-- [ ] SupportVectorRegressor
+  - [ ] Classifier
+
+  - [ ] Regressor
 
 - [ ] Decision Tree
 
+  - [ ] Classifier
+
+  - [ ] Regressor
+
 - [ ] Random Forest
 
-## Examples:
+## Examples
 
 - [x] [NaiveBayes: Iris Fisher classification](https://github.com/Lassa30/ml-from-scratch/blob/main/examples/naive_bayes_iris_classification.cpp)
