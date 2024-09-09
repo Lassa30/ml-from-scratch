@@ -14,7 +14,7 @@
 
 - [ ] Logistic Regression
 
--[ ] SupportVectorsMachine
+- [ ] SupportVectorsMachine
 
   - [ ] Classifier
 
