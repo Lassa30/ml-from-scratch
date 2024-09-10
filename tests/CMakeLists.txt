@@ -6,3 +6,6 @@ target_link_libraries(naive_bayes_test nb matrix)
 
 add_executable(linear_regression_test linear_regression_test.cpp)
 target_link_libraries(linear_regression_test linear_regression matrix)
+
+add_executable(optimizer_test optimizer_test.cpp)
+target_link_libraries(optimizer_test matrix optimizer)

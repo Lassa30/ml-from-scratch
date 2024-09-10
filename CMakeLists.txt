@@ -20,7 +20,9 @@ add_library(utils INTERFACE ../include/utils/utils.hpp)
 
 add_library(linear_regression INTERFACE ../include/models/linear_regression.hpp)
 
-set(MLFS_HEADERS nb linear_regression matrix utils)
+add_library(optimizer INTERFACE ../include/utils/optimizer.hpp)
+
+set(MLFS_HEADERS nb linear_regression matrix utils optimizer)
 
 # include directories
 foreach(mlfs_header IN LISTS MLFS_HEADERS)

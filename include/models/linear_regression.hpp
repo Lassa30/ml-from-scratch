@@ -35,6 +35,7 @@ public:
 
     // SGD
     for (int e = 0; e < epochs_; ++e) {
+
       for (auto i = 0; i < features.rows(); i += batch_) {
         std::vector<int> idx(batch_);
         std::generate(idx.begin(), idx.end(), [&]() { return intDis(gen); });
@@ -50,6 +51,7 @@ public:
         weights_ -= dw * learning_rate_; // weights update
         bias_ -= db * learning_rate_;    // bias update
       }
+      
     }
   }
 
