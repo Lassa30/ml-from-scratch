@@ -19,9 +19,7 @@ namespace mlfs { // MLFS - MlFromScratch
 // https://stackoverflow.com/questions/13698927/compare-double-to-zero-using-epsilon
 #define EPSILON 4.4408921e-16
 
-bool close_to(const double &lhs, const double &rhs) {
-  return std::abs(lhs - rhs) < EPSILON;
-}
+bool close_to(const double &lhs, const double &rhs) { return std::abs(lhs - rhs) < EPSILON; }
 
 class Matrix {
 private:
@@ -40,8 +38,7 @@ private:
     std::swap(data_, rhs.data_);
   }
 
-  std::string shape_err_msg(const std::string &method,
-                            const Matrix &rhs) const {
+  std::string shape_err_msg(const std::string &method, const Matrix &rhs) const {
     std::stringstream err_msg;
 
     err_msg << method << '\n';
@@ -49,8 +46,7 @@ private:
 
     err_msg << "lhs: (" << shape().first << " ," << shape().second << ")\n";
 
-    err_msg << "rhs: (" << rhs.shape().first << " ," << rhs.shape().second
-            << ")\n";
+    err_msg << "rhs: (" << rhs.shape().first << " ," << rhs.shape().second << ")\n";
 
     return err_msg.str();
   }
@@ -62,16 +58,13 @@ public:
   Matrix(){};
 
   // fill-constructor: fill the Matrix with the value
-  Matrix(const std::size_t &rows, const std::size_t &columns)
-      : cols_{columns}, rows_{rows} {
+  Matrix(const std::size_t &rows, const std::size_t &columns) : cols_{columns}, rows_{rows} {
     data_ = std::vector<double>(size(), 0.0);
   }
 
   // from-data-ctor
-  Matrix(const std::size_t &rows, const std::size_t &columns,
-         const std::vector<double> &rhs)
-      : rows_{rows}, cols_{columns},
-        data_(rows * columns, 0.0) // Initialize data_ with size rows*columns
+  Matrix(const std::size_t &rows, const std::size_t &columns, const std::vector<double> &rhs)
+      : rows_{rows}, cols_{columns}, data_(rows * columns, 0.0) // Initialize data_ with size rows*columns
   {
     if (size() == rhs.size()) {
       // Directly copy elements into data_
@@ -80,18 +73,16 @@ public:
       // Copy only the needed elements
       std::copy(rhs.begin(), rhs.begin() + size(), data_.begin());
     } else {
-      throw std::logic_error(
-          "Matrix(const std::size_t &rows, const std::size_t &columns, const "
-          "std::vector<double> &rhs):\n\tstd::vector size is less than "
-          "rows*columns\n");
+      throw std::logic_error("Matrix(const std::size_t &rows, const std::size_t &columns, const "
+                             "std::vector<double> &rhs):\n\tstd::vector size is less than "
+                             "rows*columns\n");
     }
   }
 
   // flat-std::vector-constructor
   Matrix(const std::vector<double> &rhs, AXIS axis) {
     if (rhs.empty()) {
-      throw std::logic_error(
-          "Couldn't construct a Matrix from an empty std::vector<double>\n");
+      throw std::logic_error("Couldn't construct a Matrix from an empty std::vector<double>\n");
     }
     if (axis != AXIS::ROW || axis != AXIS::COLUMN) {
       throw std::logic_error("Invalid axis. Use AXIS::ROW or AXIS::COLUMN.");
@@ -103,8 +94,7 @@ public:
     data_ = std::vector<double>(rhs);
   };
 
-  Matrix(const Matrix &rhs)
-      : rows_{rhs.rows_}, cols_{rhs.cols_}, data_{rhs.data_} {};
+  Matrix(const Matrix &rhs) : rows_{rhs.rows_}, cols_{rhs.cols_}, data_{rhs.data_} {};
 
   Matrix &operator=(const Matrix &rhs) {
     // copy 'n' swap idiom
@@ -116,8 +106,7 @@ public:
   };
 
   // Move semantics
-  Matrix(Matrix &&rhs) noexcept
-      : rows_{rhs.rows_}, cols_{rhs.cols_}, data_{std::move(rhs.data_)} {
+  Matrix(Matrix &&rhs) noexcept : rows_{rhs.rows_}, cols_{rhs.cols_}, data_{std::move(rhs.data_)} {
     rhs.rows_ = 0;
     rhs.cols_ = 0;
   }
@@ -129,14 +118,11 @@ public:
     return *this;
   }
 
-  inline std::pair<std::size_t, std::size_t> shape() const {
-    return {rows_, cols_};
-  }
+  inline std::pair<std::size_t, std::size_t> shape() const { return {rows_, cols_}; }
 
   inline void reshape(const std::size_t &cols, const std::size_t &rows) {
     if (cols * rows == 0) {
-      throw std::logic_error(
-          "LogicError: Reshaping to zero sized Matrix is impossible.\n");
+      throw std::logic_error("LogicError: Reshaping to zero sized Matrix is impossible.\n");
     }
 
     if (cols * rows == size()) {
@@ -147,8 +133,7 @@ public:
 
   Matrix &operator+=(const Matrix &rhs) {
     if (!(rows_ == rhs.rows_ && cols_ == rhs.cols_)) {
-      throw std::logic_error(
-          shape_err_msg("Matrix & operator+=(const Matrix & rhs)", rhs));
+      throw std::logic_error(shape_err_msg("Matrix & operator+=(const Matrix & rhs)", rhs));
     }
 
     for (auto i = 0; i < size(); ++i) {
@@ -168,8 +153,7 @@ public:
 
   Matrix &operator-=(const Matrix &rhs) {
     if (!(rows_ == rhs.rows_ && cols_ == rhs.cols_)) {
-      throw std::logic_error(
-          shape_err_msg("Matrix & operator-=(const Matrix &rhs)", rhs));
+      throw std::logic_error(shape_err_msg("Matrix & operator-=(const Matrix &rhs)", rhs));
     }
 
     for (auto i = 0; i < size(); ++i) {
@@ -260,12 +244,10 @@ public:
   Matrix matmul(const Matrix &rhs) const {
 
     if (cols_ != rhs.rows_) {
-      throw std::logic_error(
-          shape_err_msg("Matrix matmul(const Matrix & rhs)", rhs));
+      throw std::logic_error(shape_err_msg("Matrix matmul(const Matrix & rhs)", rhs));
     }
 
-    Matrix product(rows_, rhs.cols_,
-                   std::vector<double>(rows_ * rhs.cols_, 0.0));
+    Matrix product(rows_, rhs.cols_, std::vector<double>(rows_ * rhs.cols_, 0.0));
 
     // Naive algorithm is better for small matrices.
     // source: wikipedia
@@ -273,8 +255,7 @@ public:
     for (std::size_t i = 0; i < rows_; ++i) {
       for (std::size_t j = 0; j < rhs.cols_; ++j) {
         for (std::size_t k = 0; k < cols_; ++k) {
-          product.data_.at(i * rhs.cols_ + j) +=
-              (data_.at(i * cols_ + k) * rhs.data_.at(k * rhs.cols_ + j));
+          product.data_.at(i * rhs.cols_ + j) += (data_.at(i * cols_ + k) * rhs.data_.at(k * rhs.cols_ + j));
         }
       }
     }
@@ -303,11 +284,9 @@ public:
     return sum(axis) / double(row_or_col);
   }
 
-  double get(std::size_t i, std::size_t j) const {
-    return data_[i * cols_ + j];
-  }
+  double get(std::size_t i, std::size_t j) const { return data_[i * cols_ + j]; }
 
-  Matrix get_col(std::size_t col) const {
+  Matrix getCol(std::size_t col) const {
 
     if (col > cols_) {
       throw std::logic_error("Wrong column index.\n");
@@ -321,10 +300,9 @@ public:
     return Matrix(rows_, 1, resColumn);
   }
 
-  Matrix get_row(std::size_t row) const {
+  Matrix getRow(std::size_t row) const {
     if (row > rows_) {
-      throw std::logic_error(
-          "Matrix get_row(std::size_t row) const:\nWrong column index.\n");
+      throw std::logic_error("Matrix getRow(std::size_t row) const:\nWrong column index.\n");
     }
 
     std::vector<double> resRow;
@@ -337,7 +315,7 @@ public:
 
   inline std::size_t size() const { return cols_ * rows_; }
 
-  inline void print_matrix() const noexcept {
+  inline void printMatrix() const noexcept {
     std::cout << '{' << ' ';
     for (auto i = 0; i < size(); ++i) {
       if (i >= cols_ && i % cols_ == 0)
@@ -349,7 +327,7 @@ public:
     std::cout << '}' << std::endl;
   }
 
-  std::vector<double> get_data() { return data_; }
+  std::vector<double> getData() { return data_; }
 
   Matrix T() const {
     std::vector<double> transpose(size());
@@ -363,9 +341,7 @@ public:
     return Matrix(cols_, rows_, transpose);
   }
 
-  double sum() const {
-    return std::accumulate(data_.begin(), data_.end(), 0.0);
-  }
+  double sum() const { return std::accumulate(data_.begin(), data_.end(), 0.0); }
 
   inline std::size_t rows() const { return rows_; }
   inline std::size_t cols() const { return cols_; }

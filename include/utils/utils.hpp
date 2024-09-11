@@ -17,8 +17,7 @@ namespace mlfs {
 
 namespace utils {
 
-bool dataFromCsv(std::vector<double> &dataset, const std::string &filename,
-                 const char delim = ',') {
+bool dataFromCsv(std::vector<double> &dataset, const std::string &filename, const char delim = ',') {
 
   auto datasetCp(dataset);
 
@@ -59,8 +58,7 @@ double accuracyScore(const Matrix &prediction, const Matrix &answer) {
 
   return right / std::max(prediction.rows(), prediction.cols());
 }
-void genIdx(std::set<int> &idxSet, const int left, const int right,
-            const int cnt, int randomState = 42) {
+void genIdx(std::set<int> &idxSet, const int left, const int right, const int cnt, int randomState = 42) {
   int setSize = 0;
 
   std::mt19937 gen(randomState);
@@ -74,10 +72,9 @@ void genIdx(std::set<int> &idxSet, const int left, const int right,
   }
 }
 
-void vectFromIdx(std::vector<double> &vect, const std::set<int> &setIdx,
-                 const mlfs::Matrix &designMatrixTrain) {
+void vectFromIdx(std::vector<double> &vect, const std::set<int> &setIdx, const mlfs::Matrix &designMatrixTrain) {
   for (auto i : setIdx) {
-    std::vector<double> toPush(designMatrixTrain.get_row(i).get_data());
+    std::vector<double> toPush(designMatrixTrain.getRow(i).getData());
     vect.insert(vect.end(), toPush.begin(), toPush.end());
   }
 }

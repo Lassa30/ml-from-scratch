@@ -37,16 +37,14 @@ int main() {
   auto prediction = naiveBayes.predict(designMatrixTrain);
 
   std::cout << "Actual prediction: " << '\n';
-  prediction.print_matrix();
+  prediction.printMatrix();
   std::cout << std::string(64, '-') << std::endl;
 
-  std::cout << "Accuracy on train: "
-            << mlfs::utils::accuracyScore(prediction, targetColumn) << '\n';
+  std::cout << "Accuracy on train: " << mlfs::utils::accuracyScore(prediction, targetColumn) << '\n';
 
-  std::cout
-      << "\n\nTrain data prediction isn't the best way to check the model "
-         "performance.\n"
-      << "Let's split the data into train and test and evaluate the model.\n";
+  std::cout << "\n\nTrain data prediction isn't the best way to check the model "
+               "performance.\n"
+            << "Let's split the data into train and test and evaluate the model.\n";
 
   // 150 * 0.7 = 105 -> 35 35 35
   // 150 * 0.3 = 45 -> 15 15 15
@@ -67,8 +65,8 @@ int main() {
   // for (auto i : trainIdx) std::cout << i << ' ';
   // std::cout << '\n';
 
-  std::set_difference(datasetIdx.begin(), datasetIdx.end(), trainIdx.begin(),
-                      trainIdx.end(), std::inserter(testIdx, testIdx.begin()));
+  std::set_difference(datasetIdx.begin(), datasetIdx.end(), trainIdx.begin(), trainIdx.end(),
+                      std::inserter(testIdx, testIdx.begin()));
 
   // std::cout << "2) The test set has size: " << testIdx.size() << '\n';
   // for (auto i : testIdx) std::cout << i << ' ';
@@ -96,9 +94,8 @@ int main() {
   prediction = NB.predict(designMatrixTest);
 
   std::cout << "Prediction: " << '\n';
-  prediction.print_matrix();
+  prediction.printMatrix();
   std::cout << std::string(64, '-') << std::endl;
 
-  std::cout << "Accuracy on test: "
-            << mlfs::utils::accuracyScore(prediction, targetTestColumn) << "\n";
+  std::cout << "Accuracy on test: " << mlfs::utils::accuracyScore(prediction, targetTestColumn) << "\n";
 }

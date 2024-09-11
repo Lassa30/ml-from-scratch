@@ -1,10 +1,15 @@
+#ifndef LINEAR_REGRESSION_09_11_2024
+#define LINEAR_REGRESSION_09_11_2024
+
 #include <utils/matrix.hpp>
+#include <utils/optimizer.hpp>
 #include <utils/utils.hpp>
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <random>
 #include <set>
 #include <string>
@@ -12,96 +17,75 @@
 
 namespace mlfs {
 // Linear Regression with no regularization and MSE as a loss function.
-class LinearRegressionSGD {
+
+class LinearRegression {
 public:
-  LinearRegressionSGD() = default;
-  ~LinearRegressionSGD() = default;
+  LinearRegression() = default;
+  ~LinearRegression() = default;
 
-  LinearRegressionSGD(const std::size_t &batch, const double &learningRate,
-                      const int &epochs)
-      : learning_rate_{learningRate}, batch_{batch}, epochs_{epochs} {}
+  LinearRegression(std::unique_ptr<optim::Optimizer> &&optim, std::unique_ptr<optim::LossFunction> &&loss) {
+    optimizer_ = std::move(optim);
+    loss_ = std::move(loss);
+  }
 
-  void train(Matrix &features, Matrix &target, int randomState = 42) {
+  void train(const Matrix &features, const Matrix &target, const std::size_t &batch, const int &epochs, double st = 0,
+             double fin = 0, int randomState = 42) {
+
+    if (batch > features.rows()) {
+      throw std::logic_error("In LinearRegression.train():\n\tThe batch size is greater, than "
+                             "features size\n");
+    }
     // random
     std::mt19937 gen(randomState);
-    std::uniform_int_distribution<> intDis(0, features.rows() - 1);
+    std::uniform_int_distribution<> intDis(0, batch - 1);
     std::uniform_real_distribution<> realDis(-1, 1);
 
     // preparation
-    batch_ = std::min(batch_, features.rows());
-    weights_ =
-        Matrix(1, features.cols(), std::vector<double>(features.cols(), 0));
-    bias_ = 0.0;
+    optimizer_->zeroInit(features.cols());
 
     // SGD
-    for (int e = 0; e < epochs_; ++e) {
+    for (int e = 0; e < epochs; ++e) {
 
-      for (auto i = 0; i < features.rows(); i += batch_) {
-        std::vector<int> idx(batch_);
+      for (auto i = 0; i < features.rows(); i += batch) {
+        std::vector<int> idx(batch);
         std::generate(idx.begin(), idx.end(), [&]() { return intDis(gen); });
 
-        Matrix featuresBatch = getBatch(features, idx);
-        Matrix targetBatch = getBatch(target, idx);
+        const Matrix &featuresBatch = getBatch(features, idx, batch);
+        const Matrix &targetBatch = getBatch(target, idx, batch);
 
-        Matrix dw =
-            gradMSE(targetBatch, featuresBatch); // Gradient w.r.t. weights
-        double db =
-            biasGradMSE(targetBatch, featuresBatch); // Gradient w.r.t. bias
-
-        weights_ -= dw * learning_rate_; // weights update
-        bias_ -= db * learning_rate_;    // bias update
+        optimizer_->update(targetBatch, featuresBatch, *loss_);
       }
-      
     }
   }
 
   Matrix predict(const Matrix &features) {
-    return features.matmul(weights_.T()) + bias_;
+    return features.matmul((optimizer_->getWeights()).T()) + (optimizer_->getBias());
   }
 
   double score(const Matrix &prediction, const Matrix &target) {
-    return ((target - prediction) * (target - prediction) / target.rows())
-        .sum();
+    return ((target - prediction) * (target - prediction) / target.rows()).sum();
   }
 
   void printWeights() const {
     std::cout << "\nWEIGHTS:\n";
-    weights_.print_matrix();
+    optimizer_->getWeights().printMatrix();
 
     std::cout << "\nBIAS:\n";
-    std::cout << bias_ << std::endl;
+    std::cout << optimizer_->getBias() << std::endl;
   }
+
+  void setOptimizer(std::unique_ptr<optim::Optimizer> &&optim) { optimizer_ = std::move(optim); }
+  void setLoss(std::unique_ptr<optim::LossFunction> &&loss) { loss_ = std::move(loss); }
 
 private:
-  double learning_rate_ = 0.001;
-  std::size_t batch_ = 10;
-  int epochs_ = 10;
+  // weights optimization
+  std::unique_ptr<optim::Optimizer> optimizer_ = std::move(std::make_unique<optim::SGD>());
+  std::unique_ptr<optim::LossFunction> loss_ = std::move(std::make_unique<optim::MSE>());
 
-  Matrix weights_{};
-  double bias_{};
-
-  int randomState_ = 42;
-
-  // MSE differentiation w.r.t. weights_
-  Matrix gradMSE(const Matrix &y, const Matrix &X) const {
-    // dw = -(2 / len(y_batch)) * np.dot(X_batch.T, (y_batch - y_pred))
-    // db = -(2 / len(y_batch)) * np.sum(y_batch - y_pred)
-    auto y_pred = X.matmul(weights_.T()) + bias_;
-    auto grad = (X.T().matmul(y - y_pred)) * -2.0 / batch_;
-
-    return grad.T();
-  }
-
-  double biasGradMSE(const Matrix &y, const Matrix &X) const {
-    auto y_pred = X.matmul(weights_.T()) + bias_;
-
-    return ((y - y_pred) * (-2.0) / batch_).sum();
-  }
-
-  Matrix getBatch(Matrix &mat, const std::vector<int> &idx) const {
+  Matrix getBatch(const Matrix &mat, const std::vector<int> &idx, const std::size_t batch_) const {
     std::vector<double> resVect;
     for (auto rowInd : idx) {
-      auto rowVect = mat.get_row(rowInd).get_data();
+      auto rowVect = mat.getRow(rowInd).getData();
       resVect.insert(resVect.end(), rowVect.begin(), rowVect.end());
     }
 
@@ -113,3 +97,4 @@ private:
   }
 };
 } // namespace mlfs
+#endif

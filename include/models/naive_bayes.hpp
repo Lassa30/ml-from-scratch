@@ -18,8 +18,7 @@ public:
   GaussianPDF(double mean, double stddev) : mean_{mean}, std_{stddev} {};
 
   double operator()(double x) const {
-    return -0.5 * std::log(2 * M_PI * std_ * std_) -
-           (std::pow(x - mean_, 2) / (2 * std_ * std_));
+    return -0.5 * std::log(2 * M_PI * std_ * std_) - (std::pow(x - mean_, 2) / (2 * std_ * std_));
   }
 
   double prob(double x) { return std::exp(operator()(x)); }
@@ -38,10 +37,8 @@ public:
       std::stringstream err_msg;
 
       err_msg << "Wrong shape of target or features:\n";
-      err_msg << "target shape: (" << target.shape().first << ", "
-              << target.shape().second << ")\n";
-      err_msg << "features shape: (" << features.shape().first << ", "
-              << features.shape().second << ")\n";
+      err_msg << "target shape: (" << target.shape().first << ", " << target.shape().second << ")\n";
+      err_msg << "features shape: (" << features.shape().first << ", " << features.shape().second << ")\n";
 
       throw std::logic_error(err_msg.str());
     }
@@ -56,7 +53,7 @@ public:
     labelsProbas_.resize(classLabels_.size());
 
     for (auto i = 0; i < features.shape().second; i++) {
-      Matrix column = features.get_col(i);
+      Matrix column = features.getCol(i);
 
       for (auto label : classLabels_) {
         // counting labels
@@ -73,8 +70,7 @@ public:
           }
         }
 
-        double mean = std::accumulate(choosen.begin(), choosen.end(), 0.0) /
-                      choosen.size();
+        double mean = std::accumulate(choosen.begin(), choosen.end(), 0.0) / choosen.size();
 
         double stddev = 0.0;
         for (auto X : choosen)
@@ -138,8 +134,7 @@ public:
         }
       }
 
-      prediction[i] =
-          std::max_element(probas.begin(), probas.end()) - probas.begin();
+      prediction[i] = std::max_element(probas.begin(), probas.end()) - probas.begin();
       probas = labelsProbas_;
     }
 
