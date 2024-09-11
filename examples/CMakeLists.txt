@@ -1,2 +1,5 @@
-add_executable(nb_iris naive_bayes_iris_classification.cpp)
-target_link_libraries(nb_iris nb)
+add_executable(nb_iris_example naive_bayes_iris_example.cpp)
+target_link_libraries(nb_iris_example nb)
+
+add_executable(linear_regression_example linear_regression_example.cpp)
+target_link_libraries(linear_regression_example linear_regression matrix)

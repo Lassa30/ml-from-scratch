@@ -32,4 +32,4 @@
 
 - [x] [NaiveBayes: Iris Fisher classification](https://github.com/Lassa30/ml-from-scratch/blob/main/examples/naive_bayes_iris_classification.cpp)
 
-- [x] [LinearRegression: wine quality dataset](https://archive.ics.uci.edu/dataset/186/wine+quality)
+- [x] [LinearRegression: wine quality dataset](https://github.com/Lassa30/ml-from-scratch/tree/main/examples/linear_regression_example.cpp) [dataset link](https://archive.ics.uci.edu/dataset/186/wine+quality)

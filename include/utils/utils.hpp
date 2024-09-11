@@ -78,6 +78,21 @@ void vectFromIdx(std::vector<double> &vect, const std::set<int> &setIdx, const m
     vect.insert(vect.end(), toPush.begin(), toPush.end());
   }
 }
+
+std::pair<std::vector<double>, std::vector<double>> toDataset(const std::vector<double> &source, int featuresNumber) {
+  std::vector<double> X;
+  std::vector<double> y;
+
+  for (auto i = 0; i < source.size(); i++) {
+    if (i % (featuresNumber + 1) != featuresNumber)
+      X.push_back(source[i]);
+    else
+      y.push_back(source[i]);
+  }
+
+  return {X, y};
+}
+
 } // namespace utils
 } // namespace mlfs
 

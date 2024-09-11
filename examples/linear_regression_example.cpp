@@ -12,22 +12,14 @@ int main() {
   std::cout << std::fixed;
 
   std::vector<double> data;
-  mlfs::utils::dataFromCsv(data, "../tests/winequality-white.csv", ';');
+  mlfs::utils::dataFromCsv(data, "../examples/data/winequality-white.csv", ';');
 
-  std::vector<double> X;
-  std::vector<double> y;
-
-  for (auto i = 0; i < data.size(); i++) {
-    if (i % 12 != 11)
-      X.push_back(data[i]);
-    else
-      y.push_back(data[i]);
-  }
+  auto [X, y] = std::move(mlfs::utils::toDataset(data, 11));
 
   mlfs::Matrix designMatrix(4898, 11, X);
   mlfs::Matrix targetColumn(4898, 1, y);
 
-  // Construct linear regression
+  // White wine dataset: Linear Regression using SGD and MSE as a loss function
   auto opt = std::make_unique<mlfs::optim::SGD>(3.5e-5);
   auto loss = std::make_unique<mlfs::optim::MSE>();
   std::cout << "lr: " << opt->getLearningRate() << '\n';
@@ -39,7 +31,7 @@ int main() {
   auto prediction = LinReg.predict(designMatrix);
 
   std::cout << std::setprecision(3);
-  std::cout << "Compare prediction to target:\n";
+  std::cout << "Compare some predictions to the target:\n";
   for (int elem = 0; elem < 10; ++elem)
     std::cout << prediction.get(elem, 1) << " | " << targetColumn.get(elem, 1) << '\n';
 
