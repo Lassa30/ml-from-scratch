@@ -1,6 +1,8 @@
 # Classic ML algorithms implemented from scratch in C++
 
 ## TODO
+### Models
+- [ ] K-Nearest-Neighbors Classifier
 
 - [x] [Gaussian Naive Bayes Classifier](https://github.com/Lassa30/ml-from-scratch/blob/main/include/models/naive_bayes.hpp)
 
@@ -9,8 +11,6 @@
   - [ ] Lasso
 
   - [ ] Ridge
-
-- [ ] K-Nearest-Neighbors Classifier
 
 - [ ] Logistic Regression
 
@@ -26,7 +26,11 @@
 
   - [ ] Regressor
 
-- [ ] Random Forest
+- [ ] Multilayer perceptron
+
+### Tools
+
+- [ ] Data scaler
 
 ## Examples
 
