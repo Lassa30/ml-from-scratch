@@ -17,16 +17,8 @@ int main() {
   // DataSet is modified using python script. see: ../data
   std::vector<double> dataset;
   mlfs::utils::dataFromCsv(dataset, "../examples/data/IrisModified.csv");
-  std::vector<double> features;
-  std::vector<double> target;
 
-  for (int i = 0; i < dataset.size(); ++i) {
-    if (i % 5 == 4) {
-      target.push_back(dataset[i]);
-    } else {
-      features.push_back(dataset[i]);
-    }
-  }
+  auto [features, target] = mlfs::utils::toDataset(dataset, 4);
 
   mlfs::Matrix designMatrixTrain(150, 4, features);
   mlfs::Matrix targetColumn(150, 1, target);
@@ -61,16 +53,8 @@ int main() {
 
   std::set<int> testIdx;
 
-  // std::cout << "1) The train set has size: " << trainIdx.size() << '\n';
-  // for (auto i : trainIdx) std::cout << i << ' ';
-  // std::cout << '\n';
-
   std::set_difference(datasetIdx.begin(), datasetIdx.end(), trainIdx.begin(), trainIdx.end(),
                       std::inserter(testIdx, testIdx.begin()));
-
-  // std::cout << "2) The test set has size: " << testIdx.size() << '\n';
-  // for (auto i : testIdx) std::cout << i << ' ';
-  // std::cout << '\n';
 
   std::vector<double> featuresTrain;
   vectFromIdx(featuresTrain, trainIdx, designMatrixTrain);

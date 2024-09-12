@@ -93,6 +93,20 @@ std::pair<std::vector<double>, std::vector<double>> toDataset(const std::vector<
   return {X, y};
 }
 
+Matrix getBatch(const Matrix &mat, const std::vector<int> &idx, const std::size_t batch) {
+    std::vector<double> resVect;
+    for (auto rowInd : idx) {
+      auto rowVect = mat.getRow(rowInd).getData();
+      resVect.insert(resVect.end(), rowVect.begin(), rowVect.end());
+    }
+
+    if (resVect.size() == batch * mat.cols()) {
+      return Matrix(batch, mat.cols(), resVect);
+    } else {
+      throw std::runtime_error("getBatch():\n\tVect size don't match...\n");
+    }
+  }
+
 } // namespace utils
 } // namespace mlfs
 

@@ -84,7 +84,7 @@ public:
     if (rhs.empty()) {
       throw std::logic_error("Couldn't construct a Matrix from an empty std::vector<double>\n");
     }
-    if (axis != AXIS::ROW || axis != AXIS::COLUMN) {
+    if (axis != AXIS::ROW && axis != AXIS::COLUMN) {
       throw std::logic_error("Invalid axis. Use AXIS::ROW or AXIS::COLUMN.");
     }
 
@@ -342,6 +342,22 @@ public:
   }
 
   double sum() const { return std::accumulate(data_.begin(), data_.end(), 0.0); }
+
+  double L1() const {
+    double norm = 0.0;
+    for (auto d : data_) {
+      norm += std::abs(d);
+    }
+    return norm;
+  }
+
+  double L2() const {
+    double norm = 0.0;
+    for (auto d : data_) {
+      norm += d * d;
+    }
+    return norm;
+  }
 
   inline std::size_t rows() const { return rows_; }
   inline std::size_t cols() const { return cols_; }

@@ -6,9 +6,9 @@
 
 - [x] [Linear Regression](https://github.com/Lassa30/ml-from-scratch/blob/main/include/models/linear_regression.hpp)
 
-    - [ ] Lasso
+  - [ ] Lasso
 
-    - [ ] Ridge
+  - [ ] Ridge
 
 - [ ] K-Nearest-Neighbors Classifier
 

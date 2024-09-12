@@ -12,6 +12,12 @@
 namespace mlfs {
 namespace optim {
 
+enum Regularization {
+  No, // No regularization
+  L1, // L1 = Sum(abs(x_i))
+  L2, // L2 = Sum(x_i^2)
+};
+
 class LossFunction {
 public:
   virtual ~LossFunction() = default;
@@ -25,6 +31,7 @@ public:
   std::pair<Matrix, double> computeGrad(const Matrix &y, const Matrix &X, const Matrix &weights,
                                         double bias) const override {
     auto y_pred = X.matmul(weights.T()) + bias;
+
     // weights gradient
     Matrix dW = (X.T().matmul(y - y_pred)) * -2.0 / X.rows();
     // bias gradient
@@ -36,6 +43,9 @@ public:
   Matrix computeLoss(const Matrix &y, const Matrix &X, const Matrix &weights, double bias) const override {
     return (y - (X.matmul(weights.T()) + bias)) * (y - (X.matmul(weights.T()) + bias)) / X.rows();
   }
+
+protected:
+  Regularization reg_ = No;
 };
 
 class Optimizer {
@@ -51,11 +61,13 @@ public:
 
   virtual const Matrix &getWeights() const { return weights_; }
   virtual double getBias() const { return bias_; }
+  virtual bool isInit() const { return isInit_; }
 
 protected:
   Matrix weights_;
   double bias_;
 
+  Regularization reg_ = No;
   bool isInit_;
 };
 
@@ -69,12 +81,13 @@ public:
     lr_ = learningRate;
     isInit_ = true;
   }
-  SGD(double lr) : lr_{lr} {}
+  SGD(double lr, Regularization reg = No) : lr_{lr} { reg_ = reg; }
 
   void zeroInit(const std::size_t &dim) {
     if (isInit_) {
       return;
     }
+
     weights_ = Matrix(1, dim, std::vector<double>(dim, 0.0));
     bias_ = 0.0;
 

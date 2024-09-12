@@ -21,15 +21,15 @@ namespace mlfs {
 class LinearRegression {
 public:
   LinearRegression() = default;
-  ~LinearRegression() = default;
+  virtual ~LinearRegression() = default;
 
   LinearRegression(std::unique_ptr<optim::Optimizer> &&optim, std::unique_ptr<optim::LossFunction> &&loss) {
     optimizer_ = std::move(optim);
     loss_ = std::move(loss);
   }
 
-  void train(const Matrix &features, const Matrix &target, const std::size_t &batch, const int &epochs, double st = 0,
-             double fin = 0, int randomState = 42) {
+  virtual void train(const Matrix &features, const Matrix &target, const std::size_t &batch, const int &epochs,
+                     double st = 0, double fin = 0, int randomState = 42) {
 
     if (batch > features.rows()) {
       throw std::logic_error("In LinearRegression.train():\n\tThe batch size is greater, than "
@@ -50,23 +50,23 @@ public:
         std::vector<int> idx(batch);
         std::generate(idx.begin(), idx.end(), [&]() { return intDis(gen); });
 
-        const Matrix &featuresBatch = getBatch(features, idx, batch);
-        const Matrix &targetBatch = getBatch(target, idx, batch);
+        const Matrix &featuresBatch = utils::getBatch(features, idx, batch);
+        const Matrix &targetBatch = utils::getBatch(target, idx, batch);
 
         optimizer_->update(targetBatch, featuresBatch, *loss_);
       }
     }
   }
 
-  Matrix predict(const Matrix &features) {
+  virtual Matrix predict(const Matrix &features) const {
     return features.matmul((optimizer_->getWeights()).T()) + (optimizer_->getBias());
   }
 
-  double score(const Matrix &prediction, const Matrix &target) {
+  virtual double score(const Matrix &prediction, const Matrix &target) const {
     return ((target - prediction) * (target - prediction) / target.rows()).sum();
   }
 
-  void printWeights() const {
+  virtual void printWeights() const {
     std::cout << "\nWEIGHTS:\n";
     optimizer_->getWeights().printMatrix();
 
@@ -74,27 +74,22 @@ public:
     std::cout << optimizer_->getBias() << std::endl;
   }
 
-  void setOptimizer(std::unique_ptr<optim::Optimizer> &&optim) { optimizer_ = std::move(optim); }
-  void setLoss(std::unique_ptr<optim::LossFunction> &&loss) { loss_ = std::move(loss); }
+  virtual void setOptimizer(std::unique_ptr<optim::Optimizer> &&optim) { optimizer_ = std::move(optim); }
+  virtual void setLoss(std::unique_ptr<optim::LossFunction> &&loss) { loss_ = std::move(loss); }
 
 private:
   // weights optimization
   std::unique_ptr<optim::Optimizer> optimizer_ = std::move(std::make_unique<optim::SGD>());
   std::unique_ptr<optim::LossFunction> loss_ = std::move(std::make_unique<optim::MSE>());
-
-  Matrix getBatch(const Matrix &mat, const std::vector<int> &idx, const std::size_t batch_) const {
-    std::vector<double> resVect;
-    for (auto rowInd : idx) {
-      auto rowVect = mat.getRow(rowInd).getData();
-      resVect.insert(resVect.end(), rowVect.begin(), rowVect.end());
-    }
-
-    if (resVect.size() == batch_ * mat.cols()) {
-      return Matrix(batch_, mat.cols(), resVect);
-    } else {
-      throw std::runtime_error("getBatch():\n\tVect size don't match...\n");
-    }
-  }
 };
+
+class Lasso : public LinearRegression {
+public:
+private:
+  std::unique_ptr<optim::Optimizer> optimizer_ = std::move(std::make_unique<optim::SGD>());
+  std::unique_ptr<optim::LossFunction> loss_ = std::move(std::make_unique<optim::MSE>());
+};
+
 } // namespace mlfs
+
 #endif
