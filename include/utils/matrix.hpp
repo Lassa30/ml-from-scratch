@@ -327,7 +327,7 @@ public:
     std::cout << '}' << std::endl;
   }
 
-  std::vector<double> getData() { return data_; }
+  std::vector<double> getData() const { return data_; }
 
   Matrix T() const {
     std::vector<double> transpose(size());

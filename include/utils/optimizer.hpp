@@ -4,18 +4,42 @@
 #include <utils/matrix.hpp>
 
 #include <algorithm>
-#include <cmath>
 #include <memory>
 #include <random>
 #include <vector>
 
 namespace mlfs {
+
+Matrix sign(const Matrix &mat) {
+  if (mat.size() == 0)
+    throw std::logic_error("In Matrix sign(const Matrix& mat):\n\tEmpty matrix is given.\n");
+
+  std::vector<double> res(mat.size());
+  for (auto i = 0; i < mat.size(); i++) {
+    res[i] = (mat.getData()[i] > EPSILON) ? 1.0 : ((mat.getData()[i] < -EPSILON) ? -1.0 : 0);
+  }
+
+  return Matrix(mat.rows(), mat.cols(), res);
+}
+
+Matrix abs(const Matrix &mat) {
+  if (mat.size() == 0)
+    throw std::logic_error("In Matrix abs(const Matrix &mat):\n\tEmpty matrix is given.\n");
+
+  std::vector<double> res(mat.size());
+  for (auto i = 0; i < mat.size(); i++) {
+    res[i] = std::abs(mat.getData()[i]);
+  }
+
+  return Matrix(mat.rows(), mat.cols(), res);
+}
+
 namespace optim {
 
-enum Regularization {
-  No, // No regularization
+enum Reg {
+  No,
   L1, // L1 = Sum(abs(x_i))
-  L2, // L2 = Sum(x_i^2)
+  L2  // L2 = Sum(x_i^2)
 };
 
 class LossFunction {
@@ -23,11 +47,14 @@ public:
   virtual ~LossFunction() = default;
   virtual std::pair<Matrix, double> computeGrad(const Matrix &y, const Matrix &X, const Matrix &weights,
                                                 double bias) const = 0;
-  virtual Matrix computeLoss(const Matrix &y, const Matrix &X, const Matrix &weights, double bias) const = 0;
+  virtual Matrix computeLoss(const Matrix &y, const Matrix &X, const Matrix &weights, const double &bias) const = 0;
 };
 
 class MSE : public LossFunction {
 public:
+  MSE() = default;
+  MSE(const Reg &reg, const double &lmbda = 1e-3) : reg_{reg}, lambda_{lmbda} {}
+
   std::pair<Matrix, double> computeGrad(const Matrix &y, const Matrix &X, const Matrix &weights,
                                         double bias) const override {
     auto y_pred = X.matmul(weights.T()) + bias;
@@ -37,15 +64,34 @@ public:
     // bias gradient
     double db = (y - y_pred).sum() * (-2.0) / X.rows();
 
+    if (reg_ == Reg::L1) {
+      dW += sign(weights).T() * lambda_;
+      db += (bias > EPSILON) ? lambda_ : (bias < -EPSILON) ? -lambda_ : 0;
+    } else if (reg_ == Reg::L2) {
+      dW += weights.T() * 2.0 * lambda_;
+      db += bias * 2.0 * lambda_;
+    }
     return {dW.T(), db};
   }
 
-  Matrix computeLoss(const Matrix &y, const Matrix &X, const Matrix &weights, double bias) const override {
-    return (y - (X.matmul(weights.T()) + bias)) * (y - (X.matmul(weights.T()) + bias)) / X.rows();
+  Matrix computeLoss(const Matrix &y, const Matrix &prediction, const Matrix &weights,
+                     const double &bias) const override {
+    auto loss = (y - prediction) * (y - prediction) / y.rows();
+
+    if (reg_ == Reg::No) {
+      return loss;
+    } else if (reg_ == Reg::L1) {
+      loss += abs(weights.T()).sum() * lambda_ + std::abs(bias) * lambda_;
+    } else if (reg_ == Reg::L2) {
+      loss += (weights * weights).sum() * 2.0 * lambda_;
+      loss += bias * bias * 2.0 * lambda_;
+    }
+    return loss;
   }
 
 protected:
-  Regularization reg_ = No;
+  Reg reg_ = Reg::No;
+  double lambda_ = 1e-3;
 };
 
 class Optimizer {
@@ -67,7 +113,6 @@ protected:
   Matrix weights_;
   double bias_;
 
-  Regularization reg_ = No;
   bool isInit_;
 };
 
@@ -81,7 +126,7 @@ public:
     lr_ = learningRate;
     isInit_ = true;
   }
-  SGD(double lr, Regularization reg = No) : lr_{lr} { reg_ = reg; }
+  SGD(double lr) : lr_{lr} {}
 
   void zeroInit(const std::size_t &dim) {
     if (isInit_) {
@@ -90,6 +135,9 @@ public:
 
     weights_ = Matrix(1, dim, std::vector<double>(dim, 0.0));
     bias_ = 0.0;
+
+    std::cout << "\nWeights are init\n";
+    weights_.printMatrix();
 
     isInit_ = true;
   }
