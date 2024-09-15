@@ -1,7 +1,9 @@
 #include <models/naive_bayes.hpp>
+#include <utils/matrix.hpp>
 #include <utils/utils.hpp>
 
 #include <algorithm>
+#include <cstdint>
 #include <iostream>
 #include <random>
 #include <set>
@@ -10,8 +12,6 @@
 
 #include <random>
 #include <set>
-
-using namespace mlfs::utils;
 
 int main() {
   // DataSet is modified using python script. see: ../data
@@ -47,9 +47,9 @@ int main() {
   }
 
   std::set<int> trainIdx;
-  genIdx(trainIdx, 0, 49, 35);
-  genIdx(trainIdx, 50, 99, 35);
-  genIdx(trainIdx, 100, 149, 35);
+  mlfs::utils::genIdx(trainIdx, 0, 49, 35);
+  mlfs::utils::genIdx(trainIdx, 50, 99, 35);
+  mlfs::utils::genIdx(trainIdx, 100, 149, 35);
 
   std::set<int> testIdx;
 
@@ -57,14 +57,14 @@ int main() {
                       std::inserter(testIdx, testIdx.begin()));
 
   std::vector<double> featuresTrain;
-  vectFromIdx(featuresTrain, trainIdx, designMatrixTrain);
+  mlfs::utils::vectFromIdx(featuresTrain, trainIdx, designMatrixTrain);
   std::vector<double> featuresTest;
-  vectFromIdx(featuresTest, testIdx, designMatrixTrain);
+  mlfs::utils::vectFromIdx(featuresTest, testIdx, designMatrixTrain);
 
   std::vector<double> targetTrain;
-  vectFromIdx(targetTrain, trainIdx, targetColumn);
+  mlfs::utils::vectFromIdx(targetTrain, trainIdx, targetColumn);
   std::vector<double> targetTest;
-  vectFromIdx(targetTest, testIdx, targetColumn);
+  mlfs::utils::vectFromIdx(targetTest, testIdx, targetColumn);
 
   mlfs::GaussianNaiveBayes NB{};
 

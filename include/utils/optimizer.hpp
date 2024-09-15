@@ -10,7 +10,7 @@
 
 namespace mlfs {
 
-Matrix sign(const Matrix &mat) {
+inline Matrix sign(const Matrix &mat) {
   if (mat.size() == 0)
     throw std::logic_error("In Matrix sign(const Matrix& mat):\n\tEmpty matrix is given.\n");
 
@@ -22,7 +22,7 @@ Matrix sign(const Matrix &mat) {
   return Matrix(mat.rows(), mat.cols(), res);
 }
 
-Matrix abs(const Matrix &mat) {
+inline Matrix abs(const Matrix &mat) {
   if (mat.size() == 0)
     throw std::logic_error("In Matrix abs(const Matrix &mat):\n\tEmpty matrix is given.\n");
 

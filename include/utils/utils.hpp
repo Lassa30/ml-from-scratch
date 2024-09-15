@@ -17,7 +17,7 @@ namespace mlfs {
 
 namespace utils {
 
-bool dataFromCsv(std::vector<double> &dataset, const std::string &filename, const char delim = ',') {
+inline bool dataFromCsv(std::vector<double> &dataset, const std::string &filename, const char delim = ',') {
 
   auto datasetCp(dataset);
 
@@ -46,7 +46,7 @@ bool dataFromCsv(std::vector<double> &dataset, const std::string &filename, cons
   return true;
 }
 
-double accuracyScore(const Matrix &prediction, const Matrix &answer) {
+inline double accuracyScore(const Matrix &prediction, const Matrix &answer) {
   // prediction and answer should have equal shapes like: (1, n) or (n, 1)
   double right = 0;
 
@@ -58,7 +58,8 @@ double accuracyScore(const Matrix &prediction, const Matrix &answer) {
 
   return right / std::max(prediction.rows(), prediction.cols());
 }
-void genIdx(std::set<int> &idxSet, const int left, const int right, const int cnt, int randomState = 42) {
+
+inline void genIdx(std::set<int> &idxSet, const int left, const int right, const int cnt, int randomState = 42) {
   int setSize = 0;
 
   std::mt19937 gen(randomState);
@@ -72,14 +73,15 @@ void genIdx(std::set<int> &idxSet, const int left, const int right, const int cn
   }
 }
 
-void vectFromIdx(std::vector<double> &vect, const std::set<int> &setIdx, const mlfs::Matrix &designMatrixTrain) {
+inline void vectFromIdx(std::vector<double> &vect, const std::set<int> &setIdx, const mlfs::Matrix &designMatrixTrain) {
   for (auto i : setIdx) {
     std::vector<double> toPush(designMatrixTrain.getRow(i).getData());
     vect.insert(vect.end(), toPush.begin(), toPush.end());
   }
 }
 
-std::pair<std::vector<double>, std::vector<double>> toDataset(const std::vector<double> &source, int featuresNumber) {
+inline std::pair<std::vector<double>, std::vector<double>> toDataset(const std::vector<double> &source,
+                                                                     int featuresNumber) {
   std::vector<double> X;
   std::vector<double> y;
 
@@ -93,19 +95,19 @@ std::pair<std::vector<double>, std::vector<double>> toDataset(const std::vector<
   return {X, y};
 }
 
-Matrix getBatch(const Matrix &mat, const std::vector<int> &idx, const std::size_t batch) {
-    std::vector<double> resVect;
-    for (auto rowInd : idx) {
-      auto rowVect = mat.getRow(rowInd).getData();
-      resVect.insert(resVect.end(), rowVect.begin(), rowVect.end());
-    }
-
-    if (resVect.size() == batch * mat.cols()) {
-      return Matrix(batch, mat.cols(), resVect);
-    } else {
-      throw std::runtime_error("getBatch():\n\tVect size don't match...\n");
-    }
+inline Matrix getBatch(const Matrix &mat, const std::vector<int> &idx, const std::size_t batch) {
+  std::vector<double> resVect;
+  for (auto rowInd : idx) {
+    auto rowVect = mat.getRow(rowInd).getData();
+    resVect.insert(resVect.end(), rowVect.begin(), rowVect.end());
   }
+
+  if (resVect.size() == batch * mat.cols()) {
+    return Matrix(batch, mat.cols(), resVect);
+  } else {
+    throw std::runtime_error("getBatch():\n\tVect size don't match...\n");
+  }
+}
 
 } // namespace utils
 } // namespace mlfs
