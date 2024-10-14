@@ -6,11 +6,8 @@ project(ml-from-scratch)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# if (${CMAKE_BUILD_TYPE} EQUAL "Release")
-#     add_compile_options(-Ofast)
-# endif()
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 # adding libraries
 add_library(matrix ../include/utils/matrix.hpp ../src/utils/matrix.cpp)
 
@@ -22,7 +19,10 @@ add_library(optimizer INTERFACE ../include/utils/optimizer.hpp)
 
 add_library(utils INTERFACE ../include/utils/utils.hpp)
 
-set(MLFS_HEADERS nb utils optimizer linear_regression matrix)
+add_library(neighbors ../include/models/neighbors.hpp ../src/models/neighbors.cpp)
+
+set(MLFS_HEADERS nb utils optimizer linear_regression matrix neighbors)
+
 # include directories
 foreach(mlfs_header IN LISTS MLFS_HEADERS)
     target_include_directories(${mlfs_header} INTERFACE 

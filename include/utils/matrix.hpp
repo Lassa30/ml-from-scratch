@@ -111,6 +111,9 @@ public:
 
   void printMatrix() const noexcept;
 
-}; // namespace mlfs - MlFromScratch
+};
+
+Matrix abs(const Matrix &mat);
+
 } // namespace mlfs
 #endif // MATRIX_HPP_d08_m26_y24

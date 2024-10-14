@@ -1,10 +1,10 @@
 #include <utils/matrix.hpp>
 
 #include <algorithm>
+#include <cstdint>
 #include <limits>
 #include <numeric>
 #include <sstream>
-#include <cstdint>
 
 namespace mlfs {
 
@@ -318,6 +318,14 @@ double Matrix::L2() const {
     norm += d * d;
   }
   return norm;
+}
+
+Matrix abs(const Matrix &mat) {
+  auto data = mat.getData();
+  for (auto &elem : data) {
+    elem = std::abs(elem);
+  }
+  return Matrix(mat.rows(), mat.cols(), std::move(data));
 }
 
 } // namespace mlfs
