@@ -4,7 +4,7 @@
 
 ### Models
 
-- [x] [K-Nearest-Neighbors Classifier](https://github.com/Lassa30/ml-from-scratch/blob/main/src/models/neighbors.hpp)
+- [x] [K-Nearest-Neighbors Classifier](https://github.com/Lassa30/ml-from-scratch/blob/main/src/models/neighbors.cpp)
 - [x] [Gaussian Naive Bayes Classifier](https://github.com/Lassa30/ml-from-scratch/blob/main/src/models/naive_bayes.cpp)
 - [x] [Linear Regression](https://github.com/Lassa30/ml-from-scratch/blob/main/src/models/linear_regression.cpp)
   - [x] Lasso
