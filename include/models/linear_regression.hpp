@@ -3,7 +3,6 @@
 
 #include <utils/matrix.hpp>
 #include <utils/optimizer.hpp>
-
 #include <memory>
 
 namespace mlfs {

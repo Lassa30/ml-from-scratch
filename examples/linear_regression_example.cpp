@@ -1,3 +1,4 @@
+#include <utils/matrix.hpp>
 #include <models/linear_regression.hpp>
 #include <utils/utils.hpp>
 

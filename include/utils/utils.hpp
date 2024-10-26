@@ -17,8 +17,29 @@ namespace mlfs {
 
 namespace utils {
 
-inline bool dataFromCsv(std::vector<double> &dataset, const std::string &filename, const char delim = ',') {
+// class StandardScaler {
+// public:
 
+//   Matrix fit_transform(const Matrix & data);
+
+//   void fit(const Matrix & data) {
+    
+//     std::vector<double> colData(data.rows())
+//     for (int i = 0; i < data.cols(); i++) {
+//       colData = std::move(data.col);
+//     }
+//   }
+
+//   Matrix transform();
+
+// private:
+//   std::vector<std::pair<double>> params_;
+
+// }
+
+inline bool
+dataFromCsv(std::vector<double> &dataset, const std::string &filename,
+            const char delim = ',') {
   auto datasetCp(dataset);
 
   std::fstream file(filename);

@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <memory>
 #include <random>
+#include <set>
 #include <vector>
 
 namespace mlfs {
@@ -34,6 +35,37 @@ inline Matrix abs(const Matrix &mat) {
   return Matrix(mat.rows(), mat.cols(), res);
 }
 
+inline Matrix sigmoid(const Matrix &x) { return 1.0 / ((x * -1).exp() + 1); }
+inline Matrix sigmoidInv(const Matrix &x) { return (x * -1).exp() + 1; }
+
+// calculate softmax for each row
+// ex:
+// [ 1, 2, 3     [ 0.1 0.3 0.6
+//  1, 1, 1  ~    0.3 0.3 0.3
+//  2, 2, 2 ]      0.3 0.3 0.3 ]
+
+inline Matrix softmax(const Matrix &x) {
+  auto exp_x = x.exp();
+  auto x_copy = x;
+  std::vector<double> row_exp_sum(x.rows());
+
+  // step 1: compute the sum of exponents for each row
+  for (int j = 0; j < x.rows(); j++) {
+    for (int i = 0; i < x.cols(); i++) {
+      row_exp_sum[j] += exp_x.get(j, i);
+    }
+  }
+
+  // step 2: divide each exp by exp_sum
+  for (int i = 0; i < x.rows(); i++) {
+    for (int j = 0; j < x.cols(); j++) {
+      exp_x[i * x.cols() + j] /= row_exp_sum[i];
+    }
+  }
+
+  return exp_x;
+}
+
 namespace optim {
 
 enum Reg {
@@ -50,6 +82,36 @@ public:
   virtual Matrix computeLoss(const Matrix &y, const Matrix &X, const Matrix &weights, const double &bias) const = 0;
 };
 
+
+
+
+// CrossEntropyLoss
+class CEL : public LossFunction {
+public:
+  CEL(std::set<int> labels) : labels_{labels} {}
+
+  // return pair: dW, db
+
+  // find derivatives.
+  std::pair<Matrix, double> computeGrad(const Matrix &y, const Matrix &X,
+                                        const Matrix &weights,
+                                        double bias) const;
+
+  Matrix computeLoss(const Matrix &y, const Matrix &X, const Matrix &weights, const double &bias) const {
+    auto y_one_hot = Matrix(X.rows(), labels_.size());
+    // X: [NxM], y: [Nx1], y_one_hot: [NxC], softmax: [X @ W.T()] = [[NxM]*[CxM].T()]=[NxC], softmax[NxC] -> [NxC] logits GOOD!
+    for (auto i = 0; i < y.rows(); i++) {
+      int label = y.get(i, 1);
+      y_one_hot[i * labels_.size() + label] = 1.0;
+    }
+
+    return (y_one_hot * (softmax(X.matmul(weights.T()) + bias)).log());  //* (-1.0 / X.rows());
+  }
+
+private:
+  std::set<int> labels_;
+};
+
 class MSE : public LossFunction {
 public:
   MSE() = default;
@@ -61,6 +123,7 @@ public:
 
     // weights gradient
     Matrix dW = (X.T().matmul(y - y_pred)) * -2.0 / X.rows();
+
     // bias gradient
     double db = (y - y_pred).sum() * (-2.0) / X.rows();
 
@@ -90,7 +153,7 @@ public:
   }
 
 protected:
-  Reg reg_ = Reg::No;
+  Reg reg_ = Reg::L2;
   double lambda_ = 1e-3;
 };
 
@@ -152,6 +215,11 @@ public:
 
 private:
   double lr_ = 1e-3;
+
+  Matrix weights_;
+  double bias_;
+
+  bool isInit_;
 };
 
 } // namespace optim

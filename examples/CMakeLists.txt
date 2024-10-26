@@ -2,7 +2,7 @@ add_executable(nb_iris_example naive_bayes_iris_example.cpp)
 target_link_libraries(nb_iris_example nb matrix)
 
 add_executable(linear_regression_example linear_regression_example.cpp)
-target_link_libraries(linear_regression_example linear_regression matrix)
+target_link_libraries(linear_regression_example linear_regression matrix optimizer)
 
 add_executable(knn_example knn_example.cpp)
 target_link_libraries(knn_example neighbors matrix)

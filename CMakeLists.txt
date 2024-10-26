@@ -21,7 +21,9 @@ add_library(utils INTERFACE ../include/utils/utils.hpp)
 
 add_library(neighbors ../include/models/neighbors.hpp ../src/models/neighbors.cpp)
 
-set(MLFS_HEADERS nb utils optimizer linear_regression matrix neighbors)
+add_library(logistic_regression ../include/models/logistic_regression.hpp ../src/models/logistic_regression.cpp)
+
+set(MLFS_HEADERS nb utils optimizer linear_regression matrix neighbors logistic_regression)
 
 # include directories
 foreach(mlfs_header IN LISTS MLFS_HEADERS)

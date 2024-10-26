@@ -1,6 +1,7 @@
 #include <utils/matrix.hpp>
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <limits>
 #include <numeric>
@@ -326,6 +327,32 @@ Matrix abs(const Matrix &mat) {
     elem = std::abs(elem);
   }
   return Matrix(mat.rows(), mat.cols(), std::move(data));
+}
+
+Matrix operator/(const double &lhs, const Matrix &rhs) {
+  auto data = rhs.getData();
+  for (auto &elem : data) {
+    elem *= 1.0 / lhs;
+  }
+  return Matrix(rhs.rows(), rhs.cols(), std::move(data));
+}
+
+// elementwise logarithm
+Matrix Matrix::log() const {
+  auto vect = getData();
+  for (auto &elem : vect) {
+    elem = std::log(elem);
+  }
+  return Matrix(rows(), cols(), std::move(vect));
+}
+
+// elementwise exponent
+Matrix Matrix::exp() const {
+  auto vect = getData();
+  for (auto &elem : vect) {
+    elem = std::exp(elem);
+  }
+  return Matrix(rows(), cols(), std::move(vect));
 }
 
 } // namespace mlfs

@@ -85,6 +85,10 @@ public:
 
   Matrix mean(AXIS axis);
 
+  Matrix log() const;
+
+  Matrix exp() const;
+
   Matrix T() const;
 
   double sum() const;
@@ -109,11 +113,16 @@ public:
 
   inline std::vector<double> getData() const { return data_; }
 
+  inline double & operator[](const int &index) { return data_.at(index); }
+
   void printMatrix() const noexcept;
 
 };
 
 Matrix abs(const Matrix &mat);
+
+Matrix operator/(const double &lhs, const Matrix &rhs);
+
 
 } // namespace mlfs
 #endif // MATRIX_HPP_d08_m26_y24
