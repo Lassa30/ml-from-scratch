@@ -14,6 +14,7 @@ public:
   void train(const Matrix &features, const Matrix &target);
   Matrix predict_proba(const Matrix &features);
   void setThreshold(const double threshold);
+  double getThreshold();
 
 private:
   class Impl;

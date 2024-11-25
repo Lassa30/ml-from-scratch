@@ -82,9 +82,6 @@ public:
   virtual Matrix computeLoss(const Matrix &y, const Matrix &X, const Matrix &weights, const double &bias) const = 0;
 };
 
-
-
-
 // CrossEntropyLoss
 class CEL : public LossFunction {
 public:
@@ -93,19 +90,18 @@ public:
   // return pair: dW, db
 
   // find derivatives.
-  std::pair<Matrix, double> computeGrad(const Matrix &y, const Matrix &X,
-                                        const Matrix &weights,
-                                        double bias) const;
+  std::pair<Matrix, double> computeGrad(const Matrix &y, const Matrix &X, const Matrix &weights, double bias) const;
 
   Matrix computeLoss(const Matrix &y, const Matrix &X, const Matrix &weights, const double &bias) const {
     auto y_one_hot = Matrix(X.rows(), labels_.size());
-    // X: [NxM], y: [Nx1], y_one_hot: [NxC], softmax: [X @ W.T()] = [[NxM]*[CxM].T()]=[NxC], softmax[NxC] -> [NxC] logits GOOD!
+    // X: [NxM], y: [Nx1], y_one_hot: [NxC], softmax: [X @ W.T()] = [[NxM]*[CxM].T()]=[NxC], softmax[NxC] -> [NxC]
+    // logits GOOD!
     for (auto i = 0; i < y.rows(); i++) {
       int label = y.get(i, 1);
       y_one_hot[i * labels_.size() + label] = 1.0;
     }
 
-    return (y_one_hot * (softmax(X.matmul(weights.T()) + bias)).log());  //* (-1.0 / X.rows());
+    return (y_one_hot * (softmax(X.matmul(weights.T()) + bias)).log()); //* (-1.0 / X.rows());
   }
 
 private:

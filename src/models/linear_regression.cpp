@@ -7,7 +7,7 @@
 
 namespace mlfs {
 LinearRegression::LinearRegression()
-    : optimizer_{std::make_unique<optim::SGD>(1e-5)}, loss_{std::make_unique<optim::MSE>(optim::Reg::No)} {}
+    : optimizer_{std::make_unique<optim::SGD>(1e-5)}, loss_{std::make_unique<optim::MSE>(optim::Reg::L2)} {}
 
 LinearRegression::LinearRegression(std::unique_ptr<optim::Optimizer> &&optim,
                                    std::unique_ptr<optim::LossFunction> &&loss) {
@@ -27,10 +27,8 @@ void LinearRegression::train(const Matrix &features, const Matrix &target, const
   std::uniform_int_distribution<> intDis(0, features.rows() - 1);
   std::uniform_real_distribution<> realDis(-1, 1);
 
-  // preparation
-  optimizer_->zeroInit(features.cols());
-
   // SGD
+  optimizer_->zeroInit(features.cols());
   std::vector<int> idx(features.rows());
   std::iota(idx.begin(), idx.end(), 0);
   auto batchIdx = std::vector<int>(batch);

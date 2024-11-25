@@ -1,9 +1,9 @@
 #ifndef LINEAR_REGRESSION_09_11_2024
 #define LINEAR_REGRESSION_09_11_2024
 
+#include <memory>
 #include <utils/matrix.hpp>
 #include <utils/optimizer.hpp>
-#include <memory>
 
 namespace mlfs {
 // Linear Regression with no regularization and MSE as a loss function.

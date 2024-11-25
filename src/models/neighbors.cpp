@@ -7,15 +7,14 @@ namespace mlfs {
 
 class KNN::Impl {
 public:
- Impl() = default;
+  Impl() = default;
 
- Impl(int k_neighbors) {
-   if (k_neighbors <= 0) {
-     throw std::invalid_argument(
-         "KNN(int k_neighbors):\n\t"
-         "The amount of neighbors should be greater than 0.n");
-   }
-   k_neighbors_ = k_neighbors;
+  Impl(int k_neighbors) {
+    if (k_neighbors <= 0) {
+      throw std::invalid_argument("KNN(int k_neighbors):\n\t"
+                                  "The amount of neighbors should be greater than 0.\n");
+    }
+    k_neighbors_ = k_neighbors;
   }
 
   void train(const Matrix &features, const Matrix &target) {
@@ -45,22 +44,24 @@ public:
       }
 
       // sorting by distances
-      std::sort(
-          distances.begin(), distances.end(),
-          [](const std::pair<double, int> &lhs, const std::pair<double, int> &rhs) { return lhs.first < rhs.first; });
+      std::sort(distances.begin(), distances.end(), less);
 
       // assign labels from sorted array
       for (int ind = 0; ind < k_neighbors_; ind++) {
         class_labels[ind] = distances[ind].second;
       }
 
+      // TODO:
+      //  -remove count from the cycle!
+      //  -use hashmap to count
+
       for (int ind = 0; ind < classes_; ind++) {
         class_labels_probas[ind] = std::count(class_labels.begin(), class_labels.end(), ind) / k_neighbors_;
       }
 
-      std::copy(class_labels_probas.begin(), class_labels_probas.end(),
-                results.begin() + i * classes_);
+      std::copy(class_labels_probas.begin(), class_labels_probas.end(), results.begin() + i * classes_);
     }
+
     return Matrix(features.rows(), classes_, results);
   }
 
@@ -82,7 +83,7 @@ private:
   Matrix target_;
   int classes_;
 
-  double find_distance(const Matrix &lhs, const Matrix &rhs, MetricsKNN metric) {
+  static double find_distance(const Matrix &lhs, const Matrix &rhs, MetricsKNN metric) {
     double distance = 0.0;
     if (metric == euclidean) {
       distance = (lhs * lhs - rhs * rhs).sum();
@@ -96,8 +97,13 @@ private:
     }
     return distance;
   }
+
+  static bool less(const std::pair<double, int> &lhs, const std::pair<double, int> &rhs) {
+    return lhs.first < rhs.first;
+  };
 };
 
+// PIMPL
 KNN::KNN() : pImpl_(std::make_unique<Impl>()){};
 KNN::KNN(int k_neighbors) : pImpl_(std::make_unique<Impl>(k_neighbors)) {}
 KNN::~KNN() = default;
@@ -108,7 +114,5 @@ Matrix KNN::predict_proba(const Matrix &features, MetricsKNN metric = euclidean)
   return pImpl_->predict_proba(features, metric);
 }
 
-Matrix KNN::predict(const Matrix &features, MetricsKNN metric = euclidean) {
-  return pImpl_->predict(features, metric);
-}
+Matrix KNN::predict(const Matrix &features, MetricsKNN metric = euclidean) { return pImpl_->predict(features, metric); }
 } // namespace mlfs
