@@ -1,20 +1,17 @@
 #ifndef LOGISTIC_REGRESSION_2024_10_26
 #define LOGISTIC_REGRESSION_2024_10_26
 
-#include <utils/matrix.hpp>
+#include <utils/MatrixXd.hpp>
 #include <utils/optimizer.hpp>
 
 namespace mlfs {
 class LogisticRegression {
 public:
   LogisticRegression();
-  LogisticRegression(const double &learningRate);
   ~LogisticRegression();
 
-  void train(const Matrix &features, const Matrix &target);
-  Matrix predict_proba(const Matrix &features);
-  void setThreshold(const double threshold);
-  double getThreshold();
+  void train(const MatrixXd &features, const MatrixXd &target);
+  MatrixXd predict_proba(const MatrixXd &features);
 
 private:
   class Impl;

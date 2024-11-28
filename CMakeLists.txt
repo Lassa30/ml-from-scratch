@@ -6,33 +6,17 @@ project(ml-from-scratch)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+find_package(Eigen3 REQUIRED)
+
+set(MLFS_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(MLFS_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(MLFS_EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/examples)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# adding libraries
-add_library(matrix ../include/utils/matrix.hpp ../src/utils/matrix.cpp)
+# add naive_bayes
+add_library(naive_bayes ${MLFS_INCLUDE}/models/naive_bayes.hpp ${MLFS_SRC}/models/naive_bayes.cpp)
+target_link_libraries(naive_bayes Eigen3::Eigen)
 
-add_library(nb ../include/models/naive_bayes.hpp ../src/models/naive_bayes.cpp)
-
-add_library(linear_regression ../include/models/linear_regression.hpp ../src/models/linear_regression.cpp)
-
-add_library(optimizer INTERFACE ../include/utils/optimizer.hpp)
-
-add_library(utils INTERFACE ../include/utils/utils.hpp)
-
-add_library(neighbors ../include/models/neighbors.hpp ../src/models/neighbors.cpp)
-
-add_library(logistic_regression ../include/models/logistic_regression.hpp ../src/models/logistic_regression.cpp)
-
-set(MLFS_HEADERS nb utils optimizer linear_regression matrix neighbors logistic_regression)
-
-# include directories
-foreach(mlfs_header IN LISTS MLFS_HEADERS)
-    target_include_directories(${mlfs_header} INTERFACE 
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-    ) 
-endforeach()
-
-# subdirectories
-add_subdirectory(tests)
-add_subdirectory(examples)
+# tiny examples
+add_executable(naive_bayes_example ${MLFS_EXAMPLES}/naive_bayes_test.cpp)
+target_link_libraries(naive_bayes_example naive_bayes)

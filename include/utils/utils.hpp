@@ -1,7 +1,7 @@
 #ifndef UTILS_2024_09_06
 #define UTILS_2024_09_06
 
-#include <utils/matrix.hpp>
+#include <utils/MatrixXd.hpp>
 
 #include <algorithm>
 #include <fstream>
@@ -41,7 +41,7 @@ inline bool dataFromCsv(std::vector<double> &dataset, const std::string &filenam
   return true;
 }
 
-inline double accuracyScore(const Matrix &prediction, const Matrix &answer) {
+inline double accuracyScore(const MatrixXd &prediction, const MatrixXd &answer) {
   // prediction and answer should have equal shapes like: (1, n) or (n, 1)
   double right = 0;
 
@@ -68,9 +68,9 @@ inline void genIdx(std::set<int> &idxSet, const int left, const int right, const
   }
 }
 
-inline void vectFromIdx(std::vector<double> &vect, const std::set<int> &setIdx, const mlfs::Matrix &designMatrixTrain) {
+inline void vectFromIdx(std::vector<double> &vect, const std::set<int> &setIdx, const mlfs::MatrixXd &designMatrixXdTrain) {
   for (auto i : setIdx) {
-    std::vector<double> toPush(designMatrixTrain.getRow(i).getData());
+    std::vector<double> toPush(designMatrixXdTrain.getRow(i).getData());
     vect.insert(vect.end(), toPush.begin(), toPush.end());
   }
 }
@@ -90,7 +90,7 @@ inline std::pair<std::vector<double>, std::vector<double>> toDataset(const std::
   return {X, y};
 }
 
-inline Matrix getBatch(const Matrix &mat, const std::vector<int> &idx, const std::size_t batch) {
+inline MatrixXd getBatch(const MatrixXd &mat, const std::vector<int> &idx, const std::size_t batch) {
   std::vector<double> resVect;
   for (auto rowInd : idx) {
     auto rowVect = mat.getRow(rowInd).getData();
@@ -98,7 +98,7 @@ inline Matrix getBatch(const Matrix &mat, const std::vector<int> &idx, const std
   }
 
   if (resVect.size() == batch * mat.cols()) {
-    return Matrix(batch, mat.cols(), resVect);
+    return MatrixXd(batch, mat.cols(), resVect);
   } else {
     throw std::runtime_error("getBatch():\n\tVect size don't match...\n");
   }

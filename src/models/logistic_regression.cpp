@@ -1,16 +1,16 @@
-#include <utils/matrix.hpp>
 #include <models/logistic_regression.hpp>
+#include <utils/MatrixXd.hpp>
 
 namespace mlfs {
 
 class LogisticRegression::Impl {
 public:
-  Impl() : learning_rate_{0.01} {}
+  Impl();
 
-  Matrix train(const Matrix &features, const Matrix &target);
+  MatrixXd train(const MatrixXd &features, const MatrixXd &target);
 
 private:
- double learning_rate_;
+  double learning_rate_;
 };
 
 LogisticRegression::LogisticRegression() : pImpl_{std::make_unique<Impl>()} {};
