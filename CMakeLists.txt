@@ -18,5 +18,5 @@ add_library(naive_bayes ${MLFS_INCLUDE}/models/naive_bayes.hpp ${MLFS_SRC}/model
 target_link_libraries(naive_bayes Eigen3::Eigen)
 
 # tiny examples
-add_executable(naive_bayes_example ${MLFS_EXAMPLES}/naive_bayes_test.cpp)
+add_executable(naive_bayes_example ${MLFS_EXAMPLES}/naive_bayes_example.cpp)
 target_link_libraries(naive_bayes_example naive_bayes)

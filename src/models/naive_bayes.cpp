@@ -28,15 +28,16 @@ class GaussianNaiveBayes::Impl {
         throw std::invalid_argument("Wrong data for GaussianPDF: features number don't match.\n");
       }
 
-      MatrixXd log_score(x.rows(), labelsCnt_);
-      for (int row = 0; row < labelsCnt_; row++) {
-        auto stdRowSq = stdSquared_.row(row).array() + 4 * __DBL_EPSILON__;
+      MatrixXd logScore(x.rows(), labelsCnt_);
+      for (int ind = 0; ind < labelsCnt_; ind++) {
+        auto stdRowSq = stdSquared_.row(ind).array() + 4 * __DBL_EPSILON__;
         auto preLogScore =
-            (((x.array().rowwise() - mean_.row(row).array()).square()).rowwise() / (-2.0 * stdRowSq)).rowwise() -
+            (((x.array().rowwise() - mean_.row(ind).array()).square()).rowwise() / (-2.0 * stdRowSq)).rowwise() -
             0.5 * ((2.0 * M_PI * stdRowSq).log());
-        log_score.col(row) = preLogScore.rowwise().sum();
+
+        logScore.col(ind) = preLogScore.rowwise().sum();
       }
-      return log_score;
+      return logScore;
     }
 
   private:
@@ -114,25 +115,46 @@ public:
 
   MatrixXd predict(const MatrixXd &features) {
     if (!isFitted_) {
-      throw std::logic_error("Couldn't predict, the model isn't fitted\n");
+      throw std::logic_error("\nCouldn't predict, the model isn't fitted\n");
     }
 
     MatrixXd prediction(features.rows(), 1);
     MatrixXd log_scores(features.rows(), labelsCnt_);
 
-    log_scores = gaussianPDF_(features).rowwise() + labelsLogProbas_.transpose();
+    log_scores = predict_proba(features);
     for (int row = 0; row < features.rows(); row++) {
       log_scores.row(row).maxCoeff(&prediction(row, 0));
     }
     return prediction;
   }
+
+  MatrixXd predict_proba(const MatrixXd &features) const {
+    if (!isFitted_) {
+      throw std::logic_error("\nCouldn't predict, the model isn't fitted\n");
+    }
+    MatrixXd logProba(features.rows(), labelsCnt_);
+    VectorXd Px(features.rows());
+    logProba = gaussianPDF_(features).rowwise() + labelsLogProbas_.transpose();
+
+    for (int i = 0; i < logProba.rows(); ++i) {
+        double maxLog = logProba.row(i).maxCoeff();
+        logProba.row(i) = (logProba.row(i).array() - maxLog).exp();
+        Px(i) = logProba.row(i).sum();
+        logProba.row(i) /= Px(i);
+    }
+    return logProba;
+    return logProba;
+  }
 };
 
 GaussianNaiveBayes::GaussianNaiveBayes() : pImpl_(std::make_unique<Impl>()) {}
+
 GaussianNaiveBayes::~GaussianNaiveBayes() = default;
 
 void GaussianNaiveBayes::train(const MatrixXd &features, const MatrixXd &target) { pImpl_->train(features, target); }
 
 MatrixXd GaussianNaiveBayes::predict(const MatrixXd &features) const { return pImpl_->predict(features); }
+
+MatrixXd GaussianNaiveBayes::predict_proba(const MatrixXd &features) const { return pImpl_->predict_proba(features); }
 
 } // namespace mlfs

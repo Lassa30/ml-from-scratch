@@ -19,6 +19,7 @@ public:
 
   void train(const MatrixXd &features, const MatrixXd &target);
   MatrixXd predict(const MatrixXd &features) const;
+  MatrixXd predict_proba(const MatrixXd &features) const;
 
 private:
   class Impl;
