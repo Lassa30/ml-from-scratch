@@ -2,9 +2,11 @@
 #define KNN_HPP_2024_10_14_17_26
 
 #include <memory>
-#include <utils/matrix.hpp>
+#include <eigen3/Eigen/Dense>
 
 namespace mlfs {
+  
+using namespace Eigen;
 
 enum MetricsKNN { euclidean, cosine, manhattan };
 
@@ -14,9 +16,9 @@ public:
   KNN(int k_neighbors);
   ~KNN();
 
-  void train(const Matrix &features, const Matrix &target);
-  Matrix predict_proba(const Matrix &features, MetricsKNN metric);
-  Matrix predict(const Matrix &features, MetricsKNN metric);
+  void train(const MatrixXd &features, const MatrixXd &target);
+  MatrixXd predict_proba(const MatrixXd &features, MetricsKNN metric);
+  MatrixXd predict(const MatrixXd &features, MetricsKNN metric);
 
 private:
   class Impl;
