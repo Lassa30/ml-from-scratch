@@ -20,9 +20,16 @@ add_library(naive_bayes ${MLFS_INCLUDE}/models/naive_bayes.hpp ${MLFS_SRC}/model
 target_link_libraries(naive_bayes Eigen3::Eigen)
 
 # nn constructor
-add_library(model ${MLFS_INCLUDE}/model.hpp ${MLFS_SRC}/model.cpp)
-add_library(optimizer ${MLFS_INCLUDE}/optimizer.hpp ${MLFS_SRC}/optimizer.cpp)
-add_library(layers ${MLFS_INCLUDE}/layers.hpp ${MLFS_SRC}/layers.cpp)
+add_library(model ${MLFS_INCLUDE}/nn/model.hpp ${MLFS_SRC}/nn/model.cpp)
+add_library(optimizer ${MLFS_INCLUDE}/nn/optimizer.hpp ${MLFS_SRC}/nn/optimizer.cpp)
+add_library(layers ${MLFS_INCLUDE}/nn/layers.hpp ${MLFS_SRC}/nn/layers.cpp)
+add_library(loss_function ${MLFS_INCLUDE}/nn/loss_function.hpp ${MLFS_SRC}/nn/loss_function.cpp)
+target_link_libraries(
+  model 
+  layers 
+  optimizer 
+  loss_function
+)
 
 # tiny examples
 add_executable(naive_bayes_example ${MLFS_EXAMPLES}/naive_bayes_example.cpp)
