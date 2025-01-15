@@ -11,8 +11,8 @@ using namespace Eigen;
 class Layer {
  public:
   virtual ~Layer() = default;
-  virtual MatrixXd &backward(const MatrixXd &input) = 0;
-  virtual MatrixXd &forward(const MatrixXd &input) = 0;
+  virtual MatrixXd& backward(const MatrixXd& input) = 0;
+  virtual MatrixXd& forward(const MatrixXd& input) = 0;
 };
 
 class ActivationLayer : public Layer {};
@@ -21,11 +21,11 @@ class Linear : public Layer {
  public:
   Linear();
   // Optimizer uses these methods to update weights and biases
-  const MatrixXd &getWeights();
-  const double &getBiases();
+  const MatrixXd& getWeights();
+  const double& getBiases();
 
-  MatrixXd &getWeightsGrad(const MatrixXd &input);
-  double &getBiasesGrad(const MatrixXd &input);
+  MatrixXd& getWeightsGrad(const MatrixXd& input);
+  double& getBiasesGrad(const MatrixXd& input);
 
  private:
   MatrixXd X;  // "X" is a good name for an input, right?

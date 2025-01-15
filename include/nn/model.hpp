@@ -24,7 +24,7 @@ class Model {
 
   virtual ~Model();
 
-  virtual const MatrixXd &forward(const MatrixXd &x);
+  virtual const MatrixXd& forward(const MatrixXd& x);
 
   // TODO: save and load methods for a model.
   // void save();
@@ -37,7 +37,7 @@ class Model {
     class LayerNode;
   };
 
-  virtual LayerGraph &parameters();
+  virtual LayerGraph& parameters();
 };
 
 // class Model {

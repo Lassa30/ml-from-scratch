@@ -17,7 +17,7 @@ class KNN::Impl {
     k_neighbors_ = k_neighbors;
   }
 
-  void train(const MatrixXd &features, const MatrixXd &target) {
+  void train(const MatrixXd& features, const MatrixXd& target) {
     if (k_neighbors_ > target.rows()) {
       k_neighbors_ = target.rows();
     }
@@ -28,7 +28,7 @@ class KNN::Impl {
     classes_ = std::unique(targetVector.begin(), targetVector.end()) - targetVector.begin();
   }
 
-  MatrixXd predict_proba(const MatrixXd &features, MetricsKNN metric = euclidean) {
+  MatrixXd predict_proba(const MatrixXd& features, MetricsKNN metric = euclidean) {
     // allocate memory for predictions - once
     std::vector<std::pair<double, int>> distances(features_.rows());
     std::vector<int> class_labels(k_neighbors_);
@@ -65,7 +65,7 @@ class KNN::Impl {
     return MatrixXd(features.rows(), classes_, results);
   }
 
-  MatrixXd predict(const MatrixXd &features, MetricsKNN metric = euclidean) {
+  MatrixXd predict(const MatrixXd& features, MetricsKNN metric = euclidean) {
     auto predictedProbas = predict_proba(features, metric);
     std::vector<double> prediction(features.rows());
     for (int ind = 0; ind < features.rows(); ind++) {
@@ -83,7 +83,7 @@ class KNN::Impl {
   MatrixXd target_;
   int classes_;
 
-  static double find_distance(const MatrixXd &lhs, const MatrixXd &rhs, MetricsKNN metric) {
+  static double find_distance(const MatrixXd& lhs, const MatrixXd& rhs, MetricsKNN metric) {
     double distance = 0.0;
     if (metric == euclidean) {
       distance = (lhs * lhs - rhs * rhs).sum();
@@ -99,7 +99,7 @@ class KNN::Impl {
     return distance;
   }
 
-  static bool less(const std::pair<double, int> &lhs, const std::pair<double, int> &rhs) {
+  static bool less(const std::pair<double, int>& lhs, const std::pair<double, int>& rhs) {
     return lhs.first < rhs.first;
   };
 };
@@ -109,13 +109,13 @@ KNN::KNN() : pImpl_(std::make_unique<Impl>()){};
 KNN::KNN(int k_neighbors) : pImpl_(std::make_unique<Impl>(k_neighbors)) {}
 KNN::~KNN() = default;
 
-void KNN::train(const MatrixXd &features, const MatrixXd &target) { pImpl_->train(features, target); }
+void KNN::train(const MatrixXd& features, const MatrixXd& target) { pImpl_->train(features, target); }
 
-MatrixXd KNN::predict_proba(const MatrixXd &features, MetricsKNN metric = euclidean) {
+MatrixXd KNN::predict_proba(const MatrixXd& features, MetricsKNN metric = euclidean) {
   return pImpl_->predict_proba(features, metric);
 }
 
-MatrixXd KNN::predict(const MatrixXd &features, MetricsKNN metric = euclidean) {
+MatrixXd KNN::predict(const MatrixXd& features, MetricsKNN metric = euclidean) {
   return pImpl_->predict(features, metric);
 }
 }  // namespace mlfs
