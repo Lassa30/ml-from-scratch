@@ -1,26 +1,25 @@
 #ifndef OPTIMIZER_HPP_2024_09_10
 #define OPTIMIZER_HPP_2024_09_10
 
-#include <utils/MatrixXd.hpp>
-
 #include <algorithm>
 #include <memory>
 #include <random>
 #include <set>
+#include <utils/MatrixXd.hpp>
 #include <vector>
 
 namespace mlfs {
 namespace optim {
 
 class LossFunction {
-public:
+ public:
   virtual ~LossFunction() = default;
   virtual MatrixXd compute(const MatrixXd &y, const MatrixXd &y_pred) const = 0;
   virtual MatrixXd gradient(const MatrixXd &y, const MatrixXd &y_pred) const = 0;
 };
 
 class MSE : public LossFunction {
-public:
+ public:
   MSE() = default;
   ~MSE() = default;
 
@@ -32,7 +31,7 @@ public:
 };
 
 class CrossEntropyLoss : public LossFunction {
-public:
+ public:
   CrossEntropyLoss() = default;
   ~CrossEntropyLoss() = default;
 
@@ -43,7 +42,7 @@ public:
 // ---------------------------------Optimizers-------------------------------------------
 
 class Optimizer {
-public:
+ public:
   virtual ~Optimizer() = default;
   Optimizer() = default;
 
@@ -57,7 +56,7 @@ public:
 };
 
 class SGD : public Optimizer {
-public:
+ public:
   SGD() = default;
 
   SGD(double lr) : lr_{lr} {}
@@ -78,9 +77,9 @@ public:
 
   double getLearningRate() { return lr_; }
 
-private:
+ private:
   double lr_ = 1e-3;
 };
-} // namespace optim
-} // namespace mlfs
+}  // namespace optim
+}  // namespace mlfs
 #endif

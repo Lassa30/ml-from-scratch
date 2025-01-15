@@ -1,13 +1,12 @@
 #ifndef UTILS_2024_09_06
 #define UTILS_2024_09_06
 
-#include <utils/MatrixXd.hpp>
-
 #include <algorithm>
 #include <fstream>
 #include <random>
 #include <set>
 #include <sstream>
+#include <utils/MatrixXd.hpp>
 #include <vector>
 
 namespace mlfs {
@@ -68,7 +67,8 @@ inline void genIdx(std::set<int> &idxSet, const int left, const int right, const
   }
 }
 
-inline void vectFromIdx(std::vector<double> &vect, const std::set<int> &setIdx, const mlfs::MatrixXd &designMatrixXdTrain) {
+inline void vectFromIdx(std::vector<double> &vect, const std::set<int> &setIdx,
+                        const mlfs::MatrixXd &designMatrixXdTrain) {
   for (auto i : setIdx) {
     std::vector<double> toPush(designMatrixXdTrain.getRow(i).getData());
     vect.insert(vect.end(), toPush.begin(), toPush.end());
@@ -104,7 +104,7 @@ inline MatrixXd getBatch(const MatrixXd &mat, const std::vector<int> &idx, const
   }
 }
 
-} // namespace utils
-} // namespace mlfs
+}  // namespace utils
+}  // namespace mlfs
 
-#endif // UTILS_2024_09_06
+#endif  // UTILS_2024_09_06

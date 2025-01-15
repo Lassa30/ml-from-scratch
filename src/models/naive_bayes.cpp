@@ -1,9 +1,8 @@
-#include <models/naive_bayes.hpp>
-
 #include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <map>
+#include <models/naive_bayes.hpp>
 #include <numeric>
 
 namespace mlfs {
@@ -11,7 +10,7 @@ namespace mlfs {
 // Gaussian PDF in point x: return -0.5 * (2 * M_PI * std_ * std_).log() - (x - mean_).square() / (2 * std_ * std_));
 class GaussianNaiveBayes::Impl {
   class GaussianPDF {
-  public:
+   public:
     GaussianPDF() = default;
     GaussianPDF(const MatrixXd &mean, const MatrixXd &stddev, const int &labelsCnt)
         : mean_(mean), stdSquared_(stddev), labelsCnt_(labelsCnt) {}
@@ -40,7 +39,7 @@ class GaussianNaiveBayes::Impl {
       return logScore;
     }
 
-  private:
+   private:
     MatrixXd mean_;
     MatrixXd stdSquared_;
     int labelsCnt_;
@@ -79,7 +78,7 @@ class GaussianNaiveBayes::Impl {
   VectorXd labelsLogProbas_;
   GaussianPDF gaussianPDF_;
 
-public:
+ public:
   Impl() : isFitted_{false}, labelsCnt_{}, labelsLogProbas_{}, gaussianPDF_{} {};
 
   void train(const MatrixXd &features, const MatrixXd &target) {
@@ -137,10 +136,10 @@ public:
     logProba = gaussianPDF_(features).rowwise() + labelsLogProbas_.transpose();
 
     for (int i = 0; i < logProba.rows(); ++i) {
-        double maxLog = logProba.row(i).maxCoeff();
-        logProba.row(i) = (logProba.row(i).array() - maxLog).exp();
-        Px(i) = logProba.row(i).sum();
-        logProba.row(i) /= Px(i);
+      double maxLog = logProba.row(i).maxCoeff();
+      logProba.row(i) = (logProba.row(i).array() - maxLog).exp();
+      Px(i) = logProba.row(i).sum();
+      logProba.row(i) /= Px(i);
     }
     return logProba;
     return logProba;
@@ -157,4 +156,4 @@ MatrixXd GaussianNaiveBayes::predict(const MatrixXd &features) const { return pI
 
 MatrixXd GaussianNaiveBayes::predict_proba(const MatrixXd &features) const { return pImpl_->predict_proba(features); }
 
-} // namespace mlfs
+}  // namespace mlfs

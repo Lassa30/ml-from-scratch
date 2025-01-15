@@ -1,18 +1,18 @@
-#include <models/neighbors.hpp>
-
 #include <algorithm>
 #include <cmath>
+#include <models/neighbors.hpp>
 
 namespace mlfs {
 
 class KNN::Impl {
-public:
+ public:
   Impl() = default;
 
   Impl(int k_neighbors) {
     if (k_neighbors <= 0) {
-      throw std::invalid_argument("KNN(int k_neighbors):\n\t"
-                                  "The amount of neighbors should be greater than 0.\n");
+      throw std::invalid_argument(
+          "KNN(int k_neighbors):\n\t"
+          "The amount of neighbors should be greater than 0.\n");
     }
     k_neighbors_ = k_neighbors;
   }
@@ -76,7 +76,7 @@ public:
     return MatrixXd(features.rows(), 1, prediction);
   }
 
-private:
+ private:
   int k_neighbors_{5};
 
   MatrixXd features_;
@@ -92,8 +92,9 @@ private:
     } else if (metric == manhattan) {
       distance = abs(lhs - rhs).sum();
     } else {
-      throw std::invalid_argument("KNN\n\tThe provided metric isn't the member of \"MetricsKNN\" "
-                                  "class.");
+      throw std::invalid_argument(
+          "KNN\n\tThe provided metric isn't the member of \"MetricsKNN\" "
+          "class.");
     }
     return distance;
   }
@@ -114,5 +115,7 @@ MatrixXd KNN::predict_proba(const MatrixXd &features, MetricsKNN metric = euclid
   return pImpl_->predict_proba(features, metric);
 }
 
-MatrixXd KNN::predict(const MatrixXd &features, MetricsKNN metric = euclidean) { return pImpl_->predict(features, metric); }
-} // namespace mlfs
+MatrixXd KNN::predict(const MatrixXd &features, MetricsKNN metric = euclidean) {
+  return pImpl_->predict(features, metric);
+}
+}  // namespace mlfs
