@@ -7,5 +7,5 @@ class Trainer {
   ~Trainer() = default;
 }
 
-} // namespace mlfs
+}  // namespace mlfs
 #endif

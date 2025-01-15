@@ -1,19 +1,18 @@
 #ifndef UTILS_2024_09_06
 #define UTILS_2024_09_06
 
-#include <utils/MatrixXd.hpp>
-
 #include <algorithm>
 #include <fstream>
 #include <random>
 #include <set>
 #include <sstream>
+#include <utils/MatrixXd.hpp>
 #include <vector>
 
 namespace mlfs {
 
 namespace utils {
-inline bool dataFromCsv(std::vector<double> &dataset, const std::string &filename, const char delim = ',') {
+inline bool dataFromCsv(std::vector<double>& dataset, const std::string& filename, const char delim = ',') {
   auto datasetCp(dataset);
 
   std::fstream file(filename);
@@ -41,7 +40,7 @@ inline bool dataFromCsv(std::vector<double> &dataset, const std::string &filenam
   return true;
 }
 
-inline double accuracyScore(const MatrixXd &prediction, const MatrixXd &answer) {
+inline double accuracyScore(const MatrixXd& prediction, const MatrixXd& answer) {
   // prediction and answer should have equal shapes like: (1, n) or (n, 1)
   double right = 0;
 
@@ -54,7 +53,7 @@ inline double accuracyScore(const MatrixXd &prediction, const MatrixXd &answer) 
   return right / std::max(prediction.rows(), prediction.cols());
 }
 
-inline void genIdx(std::set<int> &idxSet, const int left, const int right, const int cnt, int randomState = 42) {
+inline void genIdx(std::set<int>& idxSet, const int left, const int right, const int cnt, int randomState = 42) {
   int setSize = 0;
 
   std::mt19937 gen(randomState);
@@ -68,14 +67,15 @@ inline void genIdx(std::set<int> &idxSet, const int left, const int right, const
   }
 }
 
-inline void vectFromIdx(std::vector<double> &vect, const std::set<int> &setIdx, const mlfs::MatrixXd &designMatrixXdTrain) {
+inline void vectFromIdx(std::vector<double>& vect, const std::set<int>& setIdx,
+                        const mlfs::MatrixXd& designMatrixXdTrain) {
   for (auto i : setIdx) {
     std::vector<double> toPush(designMatrixXdTrain.getRow(i).getData());
     vect.insert(vect.end(), toPush.begin(), toPush.end());
   }
 }
 
-inline std::pair<std::vector<double>, std::vector<double>> toDataset(const std::vector<double> &source,
+inline std::pair<std::vector<double>, std::vector<double>> toDataset(const std::vector<double>& source,
                                                                      int featuresNumber) {
   std::vector<double> X;
   std::vector<double> y;
@@ -90,7 +90,7 @@ inline std::pair<std::vector<double>, std::vector<double>> toDataset(const std::
   return {X, y};
 }
 
-inline MatrixXd getBatch(const MatrixXd &mat, const std::vector<int> &idx, const std::size_t batch) {
+inline MatrixXd getBatch(const MatrixXd& mat, const std::vector<int>& idx, const std::size_t batch) {
   std::vector<double> resVect;
   for (auto rowInd : idx) {
     auto rowVect = mat.getRow(rowInd).getData();
@@ -104,7 +104,7 @@ inline MatrixXd getBatch(const MatrixXd &mat, const std::vector<int> &idx, const
   }
 }
 
-} // namespace utils
-} // namespace mlfs
+}  // namespace utils
+}  // namespace mlfs
 
-#endif // UTILS_2024_09_06
+#endif  // UTILS_2024_09_06

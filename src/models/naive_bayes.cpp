@@ -1,9 +1,8 @@
-#include <models/naive_bayes.hpp>
-
 #include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <map>
+#include <models/naive_bayes.hpp>
 #include <numeric>
 
 namespace mlfs {
@@ -11,19 +10,19 @@ namespace mlfs {
 // Gaussian PDF in point x: return -0.5 * (2 * M_PI * std_ * std_).log() - (x - mean_).square() / (2 * std_ * std_));
 class GaussianNaiveBayes::Impl {
   class GaussianPDF {
-  public:
+   public:
     GaussianPDF() = default;
-    GaussianPDF(const MatrixXd &mean, const MatrixXd &stddev, const int &labelsCnt)
+    GaussianPDF(const MatrixXd& mean, const MatrixXd& stddev, const int& labelsCnt)
         : mean_(mean), stdSquared_(stddev), labelsCnt_(labelsCnt) {}
 
-    GaussianPDF &operator=(const GaussianPDF &rhs) {
+    GaussianPDF& operator=(const GaussianPDF& rhs) {
       mean_ = rhs.mean_;
       stdSquared_ = rhs.stdSquared_;
       labelsCnt_ = rhs.labelsCnt_;
       return *this;
     }
 
-    MatrixXd operator()(const MatrixXd &x) const {
+    MatrixXd operator()(const MatrixXd& x) const {
       if (!(x.cols() == mean_.cols() && x.cols() == stdSquared_.cols())) {
         throw std::invalid_argument("Wrong data for GaussianPDF: features number don't match.\n");
       }
@@ -40,13 +39,13 @@ class GaussianNaiveBayes::Impl {
       return logScore;
     }
 
-  private:
+   private:
     MatrixXd mean_;
     MatrixXd stdSquared_;
     int labelsCnt_;
   };
 
-  std::set<int> get_labels(const MatrixXd &target) {
+  std::set<int> get_labels(const MatrixXd& target) {
     std::set<int> unique_labels;
     for (auto i = 0; i < target.size(); i++) {
       unique_labels.insert(static_cast<int>(target(i, 0)));
@@ -54,7 +53,7 @@ class GaussianNaiveBayes::Impl {
     return unique_labels;
   }
 
-  VectorXd countLabels(const MatrixXd &target) {
+  VectorXd countLabels(const MatrixXd& target) {
     // assume that target is a column-vector
     if (target.cols() != 1) {
       throw std::invalid_argument("GaussianNaiveBayes::Impl\n\tcountLabels: wrong target shape.\n");
@@ -79,10 +78,10 @@ class GaussianNaiveBayes::Impl {
   VectorXd labelsLogProbas_;
   GaussianPDF gaussianPDF_;
 
-public:
+ public:
   Impl() : isFitted_{false}, labelsCnt_{}, labelsLogProbas_{}, gaussianPDF_{} {};
 
-  void train(const MatrixXd &features, const MatrixXd &target) {
+  void train(const MatrixXd& features, const MatrixXd& target) {
     classLabels_ = get_labels(target);
     labelsCnt_ = classLabels_.size();
     // labelsProbas_ = [how many labels of each class] / [number of rows]
@@ -113,7 +112,7 @@ public:
     isFitted_ = true;
   }
 
-  MatrixXd predict(const MatrixXd &features) {
+  MatrixXd predict(const MatrixXd& features) {
     if (!isFitted_) {
       throw std::logic_error("\nCouldn't predict, the model isn't fitted\n");
     }
@@ -128,7 +127,7 @@ public:
     return prediction;
   }
 
-  MatrixXd predict_proba(const MatrixXd &features) const {
+  MatrixXd predict_proba(const MatrixXd& features) const {
     if (!isFitted_) {
       throw std::logic_error("\nCouldn't predict, the model isn't fitted\n");
     }
@@ -137,10 +136,10 @@ public:
     logProba = gaussianPDF_(features).rowwise() + labelsLogProbas_.transpose();
 
     for (int i = 0; i < logProba.rows(); ++i) {
-        double maxLog = logProba.row(i).maxCoeff();
-        logProba.row(i) = (logProba.row(i).array() - maxLog).exp();
-        Px(i) = logProba.row(i).sum();
-        logProba.row(i) /= Px(i);
+      double maxLog = logProba.row(i).maxCoeff();
+      logProba.row(i) = (logProba.row(i).array() - maxLog).exp();
+      Px(i) = logProba.row(i).sum();
+      logProba.row(i) /= Px(i);
     }
     return logProba;
     return logProba;
@@ -151,10 +150,10 @@ GaussianNaiveBayes::GaussianNaiveBayes() : pImpl_(std::make_unique<Impl>()) {}
 
 GaussianNaiveBayes::~GaussianNaiveBayes() = default;
 
-void GaussianNaiveBayes::train(const MatrixXd &features, const MatrixXd &target) { pImpl_->train(features, target); }
+void GaussianNaiveBayes::train(const MatrixXd& features, const MatrixXd& target) { pImpl_->train(features, target); }
 
-MatrixXd GaussianNaiveBayes::predict(const MatrixXd &features) const { return pImpl_->predict(features); }
+MatrixXd GaussianNaiveBayes::predict(const MatrixXd& features) const { return pImpl_->predict(features); }
 
-MatrixXd GaussianNaiveBayes::predict_proba(const MatrixXd &features) const { return pImpl_->predict_proba(features); }
+MatrixXd GaussianNaiveBayes::predict_proba(const MatrixXd& features) const { return pImpl_->predict_proba(features); }
 
-} // namespace mlfs
+}  // namespace mlfs
