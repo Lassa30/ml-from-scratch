@@ -1,4 +1,4 @@
-# Just notes for me
+<!-- # Just notes for me
 
 ---
 
@@ -30,4 +30,4 @@ There are two ways I see:
 1) Inside of the layer. Layer has backward public method where it calculates it's grads and gives them "back".
 2) Inside of the Layer Node 
 As far as I can see the right answer is in the Layer, it will be more logical.
--->
+--> -->

@@ -1,7 +1,9 @@
 #ifndef LAYERS_30_11_2024_HPP
 #define LAYERS_30_11_2024_HPP
 
+#include <cstdint>
 #include <eigen3/Eigen/Dense>
+#include <string>
 
 namespace mlfs {
 namespace nn {
@@ -11,31 +13,40 @@ using namespace Eigen;
 class Layer {
  public:
   virtual ~Layer() = default;
-  virtual MatrixXd& backward(const MatrixXd& input) = 0;
-  virtual MatrixXd& forward(const MatrixXd& input) = 0;
+
+  virtual const MatrixXd& forward(const MatrixXd& X) = 0;
+  virtual const MatrixXd& backward(const MatrixXd& X) = 0;
+
+  virtual const std::string& getId() const noexcept final;
+
+ protected:
+  std::string id_;
 };
 
 class ActivationLayer : public Layer {};
 
-class Linear : public Layer {
+class ParametricLayer : public Layer {
  public:
-  Linear();
-  // Optimizer uses these methods to update weights and biases
-  const MatrixXd& getWeights();
-  const double& getBiases();
+  virtual const MatrixXd& getWeights() = 0;
+  virtual const MatrixXd& getWeightsGrad(const MatrixXd& X) = 0;
 
-  MatrixXd& getWeightsGrad(const MatrixXd& input);
-  double& getBiasesGrad(const MatrixXd& input);
+  virtual double getBiases() = 0;
+  virtual double getBiasesGrad(const MatrixXd& X) = 0;
+};
+
+class Linear : public ParametricLayer {
+ public:
+  Linear(const std::int64_t& in, const std::int64_t& out, std::string id);
+
+  const MatrixXd& getWeights() override;
+  const double& getBiases() override;
+
+  const MatrixXd& getWeightsGrad(const MatrixXd& X) override;
+  const double& getBiasesGrad(const MatrixXd& X) override;
 
  private:
-  MatrixXd X;  // "X" is a good name for an input, right?
-  MatrixXd W;  // Weights
-  double b;    // bias term
-
-  // Layer' output gradients
-  MatrixXd dX;  // w.r.t. input
-  MatrixXd dW;  // w.r.t. weights
-  double db;    // w.r.t. bias
+  std::int64_t inputShape_;
+  std::int64_t outputShape_;
 };
 
 // TODO: Dense Layer with activation function as a parameter

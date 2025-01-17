@@ -17,16 +17,17 @@ class Optimizer {
  public:
   virtual ~Optimizer() = default;
 
-  Optimizer& operator=() = delete;
-  Optimzier&& operator=() = delete;
-
   Optimizer(const Optimizer&) = delete;
   Optimizer(Optimizer&&) = delete;
 
-  virtual void zeroGrad() final;
-  virtual void backward(const LossFunction& lossFn) final;
+  virtual Optimizer& operator=() = delete;
+  virtual Optimzier&& operator=() = delete;
 
+  virtual void zeroGrad() = 0;
   virtual void step() = 0;
+
+ protected:
+  std::unique_ptr<Model> model_;
 };
 
 }  // namespace nn
