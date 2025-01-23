@@ -12,7 +12,8 @@
 namespace mlfs {
 
 namespace utils {
-inline bool dataFromCsv(std::vector<double>& dataset, const std::string& filename, const char delim = ',') {
+inline bool dataFromCsv(std::vector<double>& dataset, const std::string& filename,
+                        const char delim = ',') {
   auto datasetCp(dataset);
 
   std::fstream file(filename);
@@ -53,7 +54,8 @@ inline double accuracyScore(const MatrixXd& prediction, const MatrixXd& answer) 
   return right / std::max(prediction.rows(), prediction.cols());
 }
 
-inline void genIdx(std::set<int>& idxSet, const int left, const int right, const int cnt, int randomState = 42) {
+inline void genIdx(std::set<int>& idxSet, const int left, const int right, const int cnt,
+                   int randomState = 42) {
   int setSize = 0;
 
   std::mt19937 gen(randomState);
@@ -75,8 +77,8 @@ inline void vectFromIdx(std::vector<double>& vect, const std::set<int>& setIdx,
   }
 }
 
-inline std::pair<std::vector<double>, std::vector<double>> toDataset(const std::vector<double>& source,
-                                                                     int featuresNumber) {
+inline std::pair<std::vector<double>, std::vector<double>> toDataset(
+    const std::vector<double>& source, int featuresNumber) {
   std::vector<double> X;
   std::vector<double> y;
 
@@ -90,7 +92,8 @@ inline std::pair<std::vector<double>, std::vector<double>> toDataset(const std::
   return {X, y};
 }
 
-inline MatrixXd getBatch(const MatrixXd& mat, const std::vector<int>& idx, const std::size_t batch) {
+inline MatrixXd getBatch(const MatrixXd& mat, const std::vector<int>& idx,
+                         const std::size_t batch) {
   std::vector<double> resVect;
   for (auto rowInd : idx) {
     auto rowVect = mat.getRow(rowInd).getData();

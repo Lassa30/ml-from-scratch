@@ -11,36 +11,46 @@ namespace mlfs {
 namespace nn {
 
 using namespace Eigen;
-using LayerPtr = std::shared_ptr<Layer>;
-
-// DONE: new name for the project is needed - it's not ML from scratch now (I use Eigen).
-// It's SimplyML now...
+using LayerPtr = std::unique_ptr<Layer>;
 
 class Model {
- public:
-  Model();
+  public:
+    Model();
 
-  // TODO: come up with a convinient way to construct models
-  // Example:
-  // auto m = Model(Layer(3, 5, "l1"), ReLU("l2"), Layer(5, 2, "l3"), Sigmoid());
-  // m.addResiduals({"l1", "l3"});
+    // TODO: come up with a convinient way to construct models
+    // Example:
+    // auto m = Model(Layer(3, 5, "l1"), ReLU("l2"), Layer(5, 2, "l3"), Sigmoid());
+    // m.addResiduals({"l1", "l3"});
 
-  virtual ~Model();
-  virtual const MatrixXd& forward(const MatrixXd& x);
+    virtual ~Model();
+    virtual const MatrixXd& forward(const MatrixXd& x);
+    void applyOptimizer(std::unique_ptr<Optimizer> optimzizer);
 
-  // TODO: save and load methods for a model.
-  // void save();
-  // void load();
- private:
-  class ModelStructure {
-   private:
-    class LayerNode;
+  private:
+    class ModelStructure {
+      private:
+        class LayerNode {
+          public:
+            LayerPtr forward();
+            LayerPtr backward();
 
-   public:
-    void addLayer();
-  };
+          private:
+            LayerPtr next_;
+            LayerPtr prev_;
+            std::vector<LayerPtr> residuals_;
 
-  ModelStructure model_;
+            LayerPtr layer_;
+
+            void nextForResiduals();
+            void prevForResiduals();
+        };
+
+      public:
+        void applyOptimizer(std::unique_ptr<Optimizer> optimizer);
+        void addLayer(const Layer& layer);
+    };
+
+    ModelStructure model_;
 };
 
 }  // namespace nn

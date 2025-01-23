@@ -11,42 +11,50 @@ namespace nn {
 using namespace Eigen;
 
 class Layer {
- public:
-  virtual ~Layer() = default;
+  public:
+    virtual ~Layer() = default;
 
-  virtual const MatrixXd& forward(const MatrixXd& X) = 0;
-  virtual const MatrixXd& backward(const MatrixXd& X) = 0;
+    virtual const MatrixXd& forward(const MatrixXd& X) = 0;
+    virtual const MatrixXd& backward(const MatrixXd& prevGrad) = 0;
 
-  virtual const std::string& getId() const noexcept final;
+    virtual const std::string& getId() const noexcept final { return id_; }
 
- protected:
-  std::string id_;
+  protected:
+    std::string id_;
 };
 
 class ActivationLayer : public Layer {};
 
 class ParametricLayer : public Layer {
- public:
-  virtual const MatrixXd& getWeights() = 0;
-  virtual const MatrixXd& getWeightsGrad(const MatrixXd& X) = 0;
+  public:
+    virtual const MatrixXd& getWeights() = 0;
+    virtual const MatrixXd& computeWeightsGrad(const MatrixXd& prevGrad) = 0;
 
-  virtual double getBiases() = 0;
-  virtual double getBiasesGrad(const MatrixXd& X) = 0;
+    virtual double getBiases() = 0;
+    virtual double computeBiasesGrad(const MatrixXd& prevGrad) = 0;
 };
 
 class Linear : public ParametricLayer {
- public:
-  Linear(const std::int64_t& in, const std::int64_t& out, std::string id);
+  public:
+    Linear(const std::int64_t& in, const std::int64_t& out, const std::string& id);
 
-  const MatrixXd& getWeights() override;
-  const double& getBiases() override;
+    const MatrixXd& getWeights() override;
+    double getBiases() override;
 
-  const MatrixXd& getWeightsGrad(const MatrixXd& X) override;
-  const double& getBiasesGrad(const MatrixXd& X) override;
+    const MatrixXd& computeWeightsGrad(const MatrixXd& prevGrad) override;
+    double computeBiasesGrad(const MatrixXd& prevGrad) override;
 
- private:
-  std::int64_t inputShape_;
-  std::int64_t outputShape_;
+  private:
+    std::int64_t inputShape_;
+    std::int64_t outputShape_;
+
+    MatrixXd X_;
+    MatrixXd W_;
+    double b_;
+
+    MatrixXd dX_;
+    MatrixXd dW_;
+    double db_;
 };
 
 // TODO: Dense Layer with activation function as a parameter

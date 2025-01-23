@@ -14,20 +14,20 @@ namespace mlfs {
 namespace nn {
 
 class Optimizer {
- public:
-  virtual ~Optimizer() = default;
+  public:
+    virtual ~Optimizer() = default;
 
-  Optimizer(const Optimizer&) = delete;
-  Optimizer(Optimizer&&) = delete;
+    Optimizer(const Optimizer&) = delete;
+    Optimizer(Optimizer&&) = delete;
 
-  virtual Optimizer& operator=() = delete;
-  virtual Optimzier&& operator=() = delete;
+    virtual Optimizer& operator=() = delete;
+    virtual Optimzier&& operator=() = delete;
 
-  virtual void zeroGrad() = 0;
-  virtual void step() = 0;
+    virtual void zeroGrad() = 0;
+    virtual void step() = 0;
 
- protected:
-  std::unique_ptr<Model> model_;
+  protected:
+    std::unique_ptr<Model> model_;
 };
 
 }  // namespace nn

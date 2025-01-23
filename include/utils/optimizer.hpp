@@ -27,8 +27,8 @@ namespace optim {
 //     return (y - y_pred) * (y - y_pred) / y.rows();
 //   };
 
-//   MatrixXd gradient(const MatrixXd& y, const MatrixXd& y_pred) const override { return -2.0 * (y - y_pred) /
-//   y.rows(); }
+//   MatrixXd gradient(const MatrixXd& y, const MatrixXd& y_pred) const override { return -2.0 * (y
+//   - y_pred) / y.rows(); }
 // };
 
 // class CrossEntropyLoss : public LossFunction {
