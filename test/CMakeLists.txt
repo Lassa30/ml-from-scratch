@@ -1,2 +1,3 @@
+# // clang-format off
 add_executable(test_tensor test_tensor.cpp)
 target_link_libraries(test_tensor tensor doctest)

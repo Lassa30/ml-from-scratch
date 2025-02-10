@@ -1,3 +1,5 @@
+# // clang-format off
+
 # general info
 cmake_minimum_required(VERSION 3.10)
 
@@ -29,7 +31,9 @@ add_library(layers ${MLFS_INCLUDE}/nn/layers.hpp ${MLFS_SRC}/nn/layers.cpp)
 add_library(loss_function ${MLFS_INCLUDE}/nn/loss_function.hpp
                           ${MLFS_SRC}/nn/loss_function.cpp)
 add_library(tensor ${MLFS_INCLUDE}/nn/tensor.hpp ${MLFS_SRC}/nn/tensor.cpp)
-target_link_libraries(model layers optimizer loss_function tensor)
+add_library(autograd ${MLFS_INCLUDE}/nn/autograd.hpp
+                     ${MLFS_SRC}/nn/autograd.cpp)
+target_link_libraries(tensor autograd)
 
 # examples
 if(MLFS_BUILD_EXAMPLES)
@@ -39,6 +43,16 @@ if(MLFS_BUILD_EXAMPLES)
 endif()
 
 if(MLFS_BUILD_TESTS)
+  set(no_dev_warnings_backup "$CACHE{CMAKE_SUPPRESS_DEVELOPER_WARNINGS}")
+  set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS
+      ON
+      CACHE INTERNAL "" FORCE)
+
   add_subdirectory(doctest)
+
+  set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS
+      ${no_dev_warnings_backup}
+      CACHE INTERNAL "" FORCE)
+
   add_subdirectory(test)
 endif()
