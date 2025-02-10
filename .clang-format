@@ -1,8 +1,9 @@
-BasedOnStyle: google
-ColumnLimit: 120
-IndentWidth: 4
----
 Language: Cpp
+BasedOnStyle: google
+ColumnLimit: 100
 DerivePointerAlignment: false
 PointerAlignment: Left
 IndentWidth: 2
+IndentAccessModifiers: true
+SortIncludes: true
+IncludeBlocks: Preserve

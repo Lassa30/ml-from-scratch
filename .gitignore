@@ -36,7 +36,3 @@
 build
 buildDbg
 .editorconfig
-
-# Project
-examples/
-tests/

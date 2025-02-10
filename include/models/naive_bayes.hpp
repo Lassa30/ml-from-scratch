@@ -13,17 +13,17 @@ namespace mlfs {
 using namespace Eigen;
 
 class GaussianNaiveBayes {
- public:
-  GaussianNaiveBayes();
-  ~GaussianNaiveBayes();
+  public:
+    GaussianNaiveBayes();
+    ~GaussianNaiveBayes();
 
-  void train(const MatrixXd& features, const MatrixXd& target);
-  MatrixXd predict(const MatrixXd& features) const;
-  MatrixXd predict_proba(const MatrixXd& features) const;
+    void train(const MatrixXd& features, const MatrixXd& target);
+    MatrixXd predict(const MatrixXd& features) const;
+    MatrixXd predict_proba(const MatrixXd& features) const;
 
- private:
-  class Impl;
-  std::unique_ptr<Impl> pImpl_;
+  private:
+    class Impl;
+    std::unique_ptr<Impl> pImpl_;
 };
 
 }  // namespace mlfs

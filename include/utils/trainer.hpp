@@ -3,8 +3,8 @@
 
 namespace mlfs {
 class Trainer {
-  Trainer();
-  ~Trainer() = default;
+    Trainer();
+    ~Trainer() = default;
 }
 
 }  // namespace mlfs

@@ -1,55 +1,74 @@
-#ifndef LAYERS_30_11_2024_HPP
-#define LAYERS_30_11_2024_HPP
+// #ifndef LAYERS_30_11_2024_HPP
+// #define LAYERS_30_11_2024_HPP
 
-#include <eigen3/Eigen/Dense>
+// #include <cstdint>
+// #include <eigen3/Eigen/Dense>
+// #include <string>
 
-namespace mlfs {
-namespace nn {
+// namespace mlfs {
+// namespace nn {
 
-using namespace Eigen;
+// using namespace Eigen;
 
-class Layer {
- public:
-  virtual ~Layer() = default;
-  virtual MatrixXd& backward(const MatrixXd& input) = 0;
-  virtual MatrixXd& forward(const MatrixXd& input) = 0;
-};
+// class Layer {
+//   public:
+//     virtual ~Layer() = default;
 
-class ActivationLayer : public Layer {};
+//     virtual const MatrixXd& forward(const MatrixXd& X) = 0;
+//     virtual const MatrixXd& backward(const MatrixXd& prevGrad) = 0;
 
-class Linear : public Layer {
- public:
-  Linear();
-  // Optimizer uses these methods to update weights and biases
-  const MatrixXd& getWeights();
-  const double& getBiases();
+//     virtual const std::string& getId() const noexcept final { return id_; }
 
-  MatrixXd& getWeightsGrad(const MatrixXd& input);
-  double& getBiasesGrad(const MatrixXd& input);
-
- private:
-  MatrixXd X;  // "X" is a good name for an input, right?
-  MatrixXd W;  // Weights
-  double b;    // bias term
-
-  // Layer' output gradients
-  MatrixXd dX;  // w.r.t. input
-  MatrixXd dW;  // w.r.t. weights
-  double db;    // w.r.t. bias
-};
-
-// TODO: Dense Layer with activation function as a parameter
-
-// class SoftMax : public ActivationLayer {
+//   protected:
+//     std::string id_;
 // };
 
-// class RELU : public ActivationLayer {
+// class ActivationLayer : public Layer {};
+
+// class ParametricLayer : public Layer {
+//   public:
+//     virtual const MatrixXd& getWeights() = 0;
+//     virtual const MatrixXd& computeWeightsGrad(const MatrixXd& prevGrad) = 0;
+
+//     virtual double getBiases() = 0;
+//     virtual double computeBiasesGrad(const MatrixXd& prevGrad) = 0;
 // };
 
-// class Sigmoid : public ActivationLayer {
+// class Linear : public ParametricLayer {
+//   public:
+//     Linear(const std::int64_t& in, const std::int64_t& out, const std::string& id);
+
+//     const MatrixXd& getWeights() override;
+//     double getBiases() override;
+
+//     const MatrixXd& computeWeightsGrad(const MatrixXd& prevGrad) override;
+//     double computeBiasesGrad(const MatrixXd& prevGrad) override;
+
+//   private:
+//     std::int64_t inputShape_;
+//     std::int64_t outputShape_;
+
+//     MatrixXd X_;
+//     MatrixXd W_;
+//     double b_;
+
+//     MatrixXd dX_;
+//     MatrixXd dW_;
+//     double db_;
 // };
 
-}  // namespace nn
-}  // namespace mlfs
+// // TODO: Dense Layer with activation function as a parameter
 
-#endif
+// // class SoftMax : public ActivationLayer {
+// // };
+
+// // class RELU : public ActivationLayer {
+// // };
+
+// // class Sigmoid : public ActivationLayer {
+// // };
+
+// }  // namespace nn
+// }  // namespace mlfs
+
+// #endif

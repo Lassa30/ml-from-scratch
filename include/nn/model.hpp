@@ -1,49 +1,58 @@
-#ifndef MODEL_HPP_2025_01_11
-#define MODEL_HPP_2025_01_11
+// #ifndef MODEL_HPP_2025_01_11
+// #define MODEL_HPP_2025_01_11
 
-#include <eigen3/Eigen/Dense>
-#include <map>
-#include <memory>
-#include <nn/layers.hpp>
-#include <string>
+// #include <map>
+// #include <memory>
+// #include <nn/layers.hpp>
+// #include <string>
 
-namespace mlfs {
-namespace nn {
+// namespace mlfs {
+// namespace nn {
 
-using namespace Eigen;
-using LayerPtr = std::shared_ptr<Layer>;
-
-// DONE: new name for the project is needed - it's not ML from scratch now (I use Eigen).
-// It's SimplyML now...
-
-/// TODO: think about creating a base model class where user' "forward" implementation is needed
-
-class Model {
- public:
-  Model();
-
-  virtual ~Model();
-
-  virtual const MatrixXd& forward(const MatrixXd& x);
-
-  // TODO: save and load methods for a model.
-  // void save();
-  // void load();
-
-  // class to store connections of each Layer
-  // I consider it is a possible "autograd" alternative
-  class LayerGraph {
-   private:
-    class LayerNode;
-  };
-
-  virtual LayerGraph& parameters();
-};
+// using namespace Eigen;
+// using LayerPtr = std::unique_ptr<Layer>;
 
 // class Model {
-// }
+//   public:
+//     Model();
 
-}  // namespace nn
-}  // namespace mlfs
+//     // TODO: come up with a convinient way to construct models
+//     // Example:
+//     // auto m = Model(Layer(3, 5, "l1"), ReLU("l2"), Layer(5, 2, "l3"), Sigmoid());
+//     // m.addResiduals({"l1", "l3"});
 
-#endif  // MODEL_HPP_2025_01_11
+//     virtual ~Model();
+//     virtual const MatrixXd& forward(const MatrixXd& x);
+//     void applyOptimizer(std::unique_ptr<Optimizer> optimzizer);
+
+//   private:
+//     class ModelStructure {
+//       private:
+//         class LayerNode {
+//           public:
+//             LayerPtr forward();
+//             LayerPtr backward();
+
+//           private:
+//             LayerPtr next_;
+//             LayerPtr prev_;
+//             std::vector<LayerPtr> residuals_;
+
+//             LayerPtr layer_;
+
+//             void nextForResiduals();
+//             void prevForResiduals();
+//         };
+
+//       public:
+//         void applyOptimizer(std::unique_ptr<Optimizer> optimizer);
+//         void addLayer(const Layer& layer);
+//     };
+
+//     ModelStructure model_;
+// };
+
+// }  // namespace nn
+// }  // namespace mlfs
+
+// #endif  // MODEL_HPP_2025_01_11
