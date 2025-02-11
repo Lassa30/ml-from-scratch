@@ -8,8 +8,8 @@ project(ml-from-scratch)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
-set(MLFS_BUILD_EXAMPLES DEFAULT FALSE)
-set(MLFS_BUILD_TESTS DEFAULT FALSE)
+option(MLFS_BUILD_EXAMPLES FALSE)
+option(MLFS_BUILD_TESTS TRUE)
 
 # mlfs cmake variables
 set(MLFS_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -18,6 +18,7 @@ include_directories(${MLFS_INCLUDE})
 set(MLFS_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # naive_bayes
+find_package(Eigen3 REQUIRED)
 add_library(naive_bayes ${MLFS_INCLUDE}/models/naive_bayes.hpp
                         ${MLFS_SRC}/models/naive_bayes.cpp)
 target_link_libraries(naive_bayes Eigen3::Eigen)
@@ -36,8 +37,6 @@ target_link_libraries(tensor autograd)
 
 # examples
 if(MLFS_BUILD_EXAMPLES)
-  find_package(Eigen3 REQUIRED)
-  
   set(MLFS_EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/examples)
   add_executable(naive_bayes_example ${MLFS_EXAMPLES}/naive_bayes_example.cpp)
   target_link_libraries(naive_bayes_example naive_bayes)
@@ -45,5 +44,6 @@ endif()
 
 if(MLFS_BUILD_TESTS)
   add_subdirectory(doctest)
+  set_option(DOCTEST_NO_INSTALL ON)
   add_subdirectory(test)
 endif()
