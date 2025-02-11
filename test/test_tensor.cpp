@@ -19,4 +19,14 @@ TEST_CASE("shape, stride, offset for an empty tensor.") {
   }
 
   SUBCASE("SUBCASE: offset") { CHECK(a.offset() == -1); }
+
+  bool numel_is_zero = a.numel() == 0;
+  bool memsize_is_zero = a.memsize() == 0;
+  SUBCASE("numel, memsize") { CHECK(numel_is_zero * memsize_is_zero == 0); }
 }
+
+TEST_CASE("Tensor views and reshape") {}
+
+TEST_CASE("Tensor resize") {}
+
+TEST_CASE("Tensor copy `n` move") {}

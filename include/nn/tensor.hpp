@@ -31,8 +31,7 @@ private:
 class Tensor {
 private:
   class TensorImpl;
-  std::unique_ptr<TensorImpl> impl;
-  std::shared_ptr<Storage> storagePtr;
+  std::shared_ptr<TensorImpl> impl_;
 
 public:
   Tensor();
@@ -44,8 +43,9 @@ public:
   int64_t shape(int64_t dim) const;
   int64_t offset() const noexcept;
 
-  std::shared_ptr<float> data_();
-  const std::shared_ptr<float> data();
+  int64_t numel() const noexcept;
+  int64_t memsize() const noexcept;
+  std::shared_ptr<float> data();
 };
 
 class Tensor::TensorImpl {
@@ -55,6 +55,8 @@ private:
   Stride stride_;
   std::vector<int64_t> shape_;
   int64_t offset_;
+
+  std::shared_ptr<Storage> storage_;
 
 public:
   TensorImpl(Tensor& tensor);
@@ -66,6 +68,8 @@ public:
   int64_t shape(int64_t dim) const;
 
   int64_t offset() const noexcept;
+  int64_t numel() const noexcept;
+  int64_t memsize() const noexcept;
 };
 
 namespace tensor {

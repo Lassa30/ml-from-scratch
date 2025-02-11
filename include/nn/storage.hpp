@@ -1,5 +1,7 @@
 #pragma once
+
 #include <memory>
+#include <vector>
 
 namespace mlfs {
 namespace nn {
@@ -7,18 +9,14 @@ namespace nn {
 class Storage {
 private:
   class StorageImpl {};
-
-  std::unique_ptr<StorageImpl> impl;
+  std::unique_ptr<StorageImpl> impl_;
 
 public:
   Storage() = default;
+  Storage(const std::vector<float>& data) {};
   ~Storage() = default;
 
-  int64_t size() const noexcept;
-  int64_t memsize() const noexcept;
-
-  std::shared_ptr<float> data__();
-  const std::shared_ptr<float> data();
+  const std::shared_ptr<float> data() { return nullptr; };
 };
 
 }  // namespace nn
