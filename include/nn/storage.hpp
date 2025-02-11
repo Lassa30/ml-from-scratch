@@ -5,19 +5,20 @@ namespace mlfs {
 namespace nn {
 
 class Storage {
-  private:
-    class StorageImpl {};
-    std::unique_ptr<StorageImpl> impl;
+private:
+  class StorageImpl {};
 
-  public:
-    Storage() = default;
-    ~Storage() = default;
+  std::unique_ptr<StorageImpl> impl;
 
-    int64_t size() const noexcept;
-    int64_t memsize() const noexcept;
+public:
+  Storage() = default;
+  ~Storage() = default;
 
-    std::shared_ptr<float> data__();
-    const std::shared_ptr<float> data();
+  int64_t size() const noexcept;
+  int64_t memsize() const noexcept;
+
+  std::shared_ptr<float> data__();
+  const std::shared_ptr<float> data();
 };
 
 }  // namespace nn

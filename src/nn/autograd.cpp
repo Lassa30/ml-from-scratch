@@ -1,5 +1,3 @@
-
-// just to test the formatting
 #include <algorithm>
 #include <iostream>
 

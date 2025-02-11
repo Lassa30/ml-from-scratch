@@ -1,9 +1,10 @@
 Language: Cpp
 BasedOnStyle: google
-ColumnLimit: 100
-DerivePointerAlignment: false
+ColumnLimit: 80
 PointerAlignment: Left
+ReferenceAlignment: Left
 IndentWidth: 2
-IndentAccessModifiers: true
+BreakConstructorInitializers: BeforeComma
+AccessModifierOffset: -2
 SortIncludes: true
 IncludeBlocks: Preserve

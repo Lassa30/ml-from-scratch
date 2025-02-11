@@ -12,8 +12,8 @@
 namespace mlfs {
 
 namespace utils {
-inline bool dataFromCsv(std::vector<double>& dataset, const std::string& filename,
-                        const char delim = ',') {
+inline bool dataFromCsv(std::vector<double>& dataset,
+                        const std::string& filename, const char delim = ',') {
   auto datasetCp(dataset);
 
   std::fstream file(filename);
@@ -41,7 +41,8 @@ inline bool dataFromCsv(std::vector<double>& dataset, const std::string& filenam
   return true;
 }
 
-inline double accuracyScore(const MatrixXd& prediction, const MatrixXd& answer) {
+inline double accuracyScore(const MatrixXd& prediction,
+                            const MatrixXd& answer) {
   // prediction and answer should have equal shapes like: (1, n) or (n, 1)
   double right = 0;
 
@@ -54,8 +55,8 @@ inline double accuracyScore(const MatrixXd& prediction, const MatrixXd& answer) 
   return right / std::max(prediction.rows(), prediction.cols());
 }
 
-inline void genIdx(std::set<int>& idxSet, const int left, const int right, const int cnt,
-                   int randomState = 42) {
+inline void genIdx(std::set<int>& idxSet, const int left, const int right,
+                   const int cnt, int randomState = 42) {
   int setSize = 0;
 
   std::mt19937 gen(randomState);

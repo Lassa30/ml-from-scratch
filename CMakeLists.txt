@@ -10,7 +10,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 set(MLFS_BUILD_EXAMPLES DEFAULT FALSE)
 set(MLFS_BUILD_TESTS DEFAULT FALSE)
-find_package(Eigen3 REQUIRED)
 
 # mlfs cmake variables
 set(MLFS_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -37,6 +36,8 @@ target_link_libraries(tensor autograd)
 
 # examples
 if(MLFS_BUILD_EXAMPLES)
+  find_package(Eigen3 REQUIRED)
+  
   set(MLFS_EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/examples)
   add_executable(naive_bayes_example ${MLFS_EXAMPLES}/naive_bayes_example.cpp)
   target_link_libraries(naive_bayes_example naive_bayes)
