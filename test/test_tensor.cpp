@@ -1,17 +1,22 @@
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <doctest/doctest.h>
-#include <iostream>
-
 #include <nn/tensor.hpp>
 
-/*
-auto shape_1 = {1, 1, 1} // [DxWxH]
-Tensor b = nn::tensor::ones(shape_1);
-Tensor b1 = Tensor(shape_1, 42); // creates a scalar tensor: 42!
-Tensor c = nn::tensor::zeros({1, 1, 1});
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <doctest/doctest.h>
 
-// copy ctor have to copy all metadata about tensor, but not the tensor itself!
-Tensor a = b;
+TEST_CASE("shape, stride, offset for an empty tensor.") {
+  mlfs::nn::Tensor a{};
 
-*/
-TEST_CASE("basic constructors") { CHECK(1 == 1); }
+  SUBCASE("SUBCASE: shape") {
+    CHECK(a.shape().empty());
+    CHECK_THROWS(a.shape(0) == 0);
+    CHECK_THROWS(a.shape(1));
+  }
+
+  SUBCASE("SUBCASE: stride") {
+    CHECK(a.stride().empty());
+    CHECK_THROWS(a.stride(0) == 0);
+    CHECK_THROWS(a.stride(1));
+  }
+
+  SUBCASE("SUBCASE: offset") { CHECK(a.offset() == -1); }
+}
