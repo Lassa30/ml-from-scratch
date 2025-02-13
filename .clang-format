@@ -9,3 +9,4 @@ AccessModifierOffset: -2
 SortIncludes: true
 IncludeBlocks: Preserve
 UseTab: Never
+ReflowComments: true

@@ -3,8 +3,10 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
+using namespace mlfs::nn;
+
 TEST_CASE("shape, stride, offset for an empty tensor.") {
-  mlfs::nn::Tensor a{};
+  Tensor a{};
 
   SUBCASE("SUBCASE: shape") {
     CHECK(a.shape().empty());
@@ -22,8 +24,27 @@ TEST_CASE("shape, stride, offset for an empty tensor.") {
 
   bool numel_is_zero = a.numel() == 0;
   bool memsize_is_zero = a.memsize() == 0;
-  SUBCASE("numel, memsize") { CHECK(numel_is_zero * memsize_is_zero == 0); }
+  SUBCASE("numel, memsize") { CHECK(numel_is_zero * memsize_is_zero); }
 }
+
+TEST_CASE("Tensor transpose dim=0") {
+  // Shape is Depth x Height x Width
+  // So this tensor is a two vertically stacked column vectors xD
+  Tensor a{Shape({2, 3, 1})};
+  Tensor a_T = a.T();
+
+  std::vector<int64_t> desired = {2, 3, 1};
+  CHECK(a.shape().data() == desired);
+  desired = {3, 1, 1};
+  // TODO: it should work! Implement Stride 'n' Shape to work together
+  CHECK(a.stride().data() == desired);
+}
+
+TEST_CASE("Tensor transpose dim=1") {}
+
+TEST_CASE("Tensor transpose dim=2") {}
+
+TEST_CASE("Tensor transpose dim=3") {}
 
 TEST_CASE("Tensor views and reshape") {}
 
