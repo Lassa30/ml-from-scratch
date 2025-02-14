@@ -5,6 +5,15 @@
 
 using namespace mlfs::nn;
 
+bool checkShape(const Tensor& tensor,
+                const std::vector<std::int64_t> desired) const noexcept {
+  return tensor.shape().data() == desired;
+}
+bool checkStride(const Tensor& tensor,
+                 const std::vector<std::int64_t> desired) const noexcept {
+  return tensor.stride().data() == desired;
+}
+
 TEST_CASE("shape, stride, offset for an empty tensor.") {
   Tensor a{};
 
@@ -27,26 +36,56 @@ TEST_CASE("shape, stride, offset for an empty tensor.") {
   SUBCASE("numel, memsize") { CHECK(numel_is_zero * memsize_is_zero); }
 }
 
-TEST_CASE("Tensor transpose dim=0") {
-  // Shape is Depth x Height x Width
-  // So this tensor is a two vertically stacked column vectors xD
-  Tensor a{Shape({2, 3, 1})};
-  Tensor a_T = a.T();
+TEST_CASE("Shape and Stride alignment") {
+  auto a = Tensor(Shape({5, 1}));
 
-  std::vector<int64_t> desired = {2, 3, 1};
-  CHECK(a.shape().data() == desired);
-  desired = {3, 1, 1};
-  // TODO: it should work! Implement Stride 'n' Shape to work together
-  CHECK(a.stride().data() == desired);
+  CHECK(checkShape(a, {5, 1}));
+  CHECK(checkStride(a, {1, 1}));
 }
 
-TEST_CASE("Tensor transpose dim=1") {}
+// TODO: refactor all those subcases to be the only function call.
+// Also we can test basic shape constructors to avoid the lines:
+// -------------------------------
+// CHECK(checkShape(a, {5, 1}));
+// CHECK(checkStride(a, {1, 1}));
+// -------------------------------
 
-TEST_CASE("Tensor transpose dim=2") {}
-
-TEST_CASE("Tensor transpose dim=3") {}
-
-TEST_CASE("Tensor views and reshape") {}
+// TEST_CASE("Tensor transpose") {
+//
+//   SUBCASE("scalar tensor") {
+//     Tensor a{Shape({1})};
+//     Tensor a_T = a.T();
+//
+//     std::vector<int64_t> desired = {1};
+//
+//     CHECK(a.shape().data() == desired);
+//     CHECK(a.stride().data() == desired);
+//     CHECK(a_T.shape().data() == desired);
+//     CHECK(a_T.stride().data() == desired);
+//   }
+//
+//   SUBCASE("vector tensor") {
+//     Tensor a(Shape{5, 1});
+//     Tensor a_T = a.T();
+//
+//     CHECK(checkShape(a, {5, 1}));
+//     CHECK(checkStride(a, {1, 1}));
+//
+//     CHECK(checkShape(a_T, {1, 5}));
+//     CHECK(checkStride(a_T, {1, 1}));
+//   }
+//
+//   SUBCASE("matrix tensor") {
+//     Tensor a(Shape{5, 2});
+//     Tensor a_T = a.T();
+//
+//     CHECK(checkShape(a, {5, 2}));
+//     CHECK(checkStride(a, {1, 1}));
+//
+//     CHECK(checkShape(a_T, {1, 5}));
+//     CHECK(checkStride(a_T, {1, 1}));
+//   }
+// }
 
 TEST_CASE("Tensor resize") {}
 

@@ -2,6 +2,8 @@
 
 #include <string>
 
+using std::shared_ptr;
+
 namespace mlfs {
 namespace nn {
 
@@ -10,15 +12,15 @@ __TensorImpl__
 -----------------------------------------------------*/
 Tensor::TensorImpl::TensorImpl(Tensor& tensor)
     : tensor_{tensor}
-    , stride_{}
     , shape_{}
+    , stride_{}
     , offset_{-1}
     , storage_{std::make_shared<Storage>()} {}
 
 Tensor::TensorImpl::TensorImpl(Tensor& tensor, const Shape& shape)
     : tensor_{tensor}
-    , stride_{}
     , shape_{shape}
+    , stride_{shape}
     , offset_{0}
     , storage_{std::make_shared<Storage>(shape)} {}
 
@@ -49,14 +51,14 @@ int64_t Tensor::TensorImpl::memsize() const noexcept {
   return numel() * sizeof(float);
 }
 
-const std::shared_ptr<std::vector<float>> Tensor::TensorImpl::data()
-    const noexcept {
+const std::vector<float>& Tensor::TensorImpl::data() const noexcept {
   return storage_->data();
 }
 
-Tensor Tensor::TensorImpl::T() {
-  // TODO: implement and think carefully about problems you might have with it
-  return tensor_;
+Tensor::TensorImpl Tensor::TensorImpl::T() {
+  auto tensor_copy = *this;
+
+  tensor_copy.shape_ =
 }
 
 bool Tensor::TensorImpl::empty() const noexcept {
@@ -66,6 +68,8 @@ bool Tensor::TensorImpl::empty() const noexcept {
 /*-----------------------------------------------------
 __Tensor__
 -----------------------------------------------------*/
+Tensor::Tensor(const TensorImpl& impl)
+    : impl_{std::make_shared<Tensor::TensorImpl>(impl)} {}
 Tensor::Tensor() : impl_{std::make_shared<TensorImpl>(*this)} {}
 Tensor::Tensor(const Shape& shape)
     : impl_{std::make_shared<TensorImpl>(*this, shape)} {}
@@ -79,11 +83,11 @@ int64_t Tensor::shape(int64_t dim) const { return impl_->shape(dim); }
 int64_t Tensor::offset() const noexcept { return impl_->offset(); }
 int64_t Tensor::numel() const noexcept { return impl_->numel(); }
 int64_t Tensor::memsize() const noexcept { return impl_->memsize(); }
-const std::shared_ptr<std::vector<float>> Tensor::data() const noexcept {
+const shared_ptr<std::vector<float>> Tensor::data() const noexcept {
   return impl_->data();
 }
 bool Tensor::empty() const noexcept { return impl_->empty(); }
-Tensor Tensor::T() { return impl_->T(); }
+Tensor Tensor::T() { return Tensor(impl_->T()); }
 
 }  // namespace nn
 }  // namespace mlfs

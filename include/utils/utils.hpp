@@ -77,8 +77,8 @@ inline void vectFromIdx(std::vector<double>& vect, const std::set<int>& setIdx,
   }
 }
 
-inline std::pair<std::vector<double>, std::vector<double>> toDataset(
-    const std::vector<double>& source, int featuresNumber) {
+inline std::pair<std::vector<double>, std::vector<double>>
+toDataset(const std::vector<double>& source, int featuresNumber) {
   std::vector<double> X;
   std::vector<double> y;
 
