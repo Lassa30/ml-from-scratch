@@ -13,14 +13,6 @@ namespace mlfs {
 
 namespace nn {
 
-// TODO: copy and move for stride (?)
-// TODO: do I really need a Stride and Shape classes?
-
-// Yes, you need it to check invariants only once, when a Shape/Stride
-// is provided to the Tensor(..., shape) OR Tensor(.., shape, stride)
-// after that Stride and Shape could just share their data_(or just be shared
-// by themselves) to Storage/TensorImpl that's cool!
-
 class Tensor {
 private:
   class TensorImpl;

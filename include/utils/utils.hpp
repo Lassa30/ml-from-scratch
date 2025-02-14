@@ -1,5 +1,4 @@
-#ifndef UTILS_2024_09_06
-#define UTILS_2024_09_06
+#pragma once
 
 #include <algorithm>
 #include <fstream>
@@ -110,5 +109,3 @@ inline MatrixXd getBatch(const MatrixXd& mat, const std::vector<int>& idx,
 
 }  // namespace utils
 }  // namespace mlfs
-
-#endif  // UTILS_2024_09_06

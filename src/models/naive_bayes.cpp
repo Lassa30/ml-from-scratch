@@ -157,7 +157,6 @@ public:
       logProba.row(i) /= Px(i);
     }
     return logProba;
-    return logProba;
   }
 };
 

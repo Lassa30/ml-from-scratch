@@ -23,21 +23,23 @@ add_library(naive_bayes ${MLFS_INCLUDE}/models/naive_bayes.hpp
                         ${MLFS_SRC}/models/naive_bayes.cpp)
 target_link_libraries(naive_bayes Eigen3::Eigen)
 
-# nn
-add_library(model ${MLFS_INCLUDE}/nn/model.hpp ${MLFS_SRC}/nn/model.cpp)
-add_library(optimizer ${MLFS_INCLUDE}/nn/optimizer.hpp
-                      ${MLFS_SRC}/nn/optimizer.cpp)
-add_library(layers ${MLFS_INCLUDE}/nn/layers.hpp ${MLFS_SRC}/nn/layers.cpp)
-add_library(loss_function ${MLFS_INCLUDE}/nn/loss_function.hpp
-                          ${MLFS_SRC}/nn/loss_function.cpp)
+
+# add_library(model ${MLFS_INCLUDE}/nn/model.hpp ${MLFS_SRC}/nn/model.cpp)
+# add_library(optimizer ${MLFS_INCLUDE}/nn/optimizer.hpp
+#                       ${MLFS_SRC}/nn/optimizer.cpp)
+# add_library(layers ${MLFS_INCLUDE}/nn/layers.hpp ${MLFS_SRC}/nn/layers.cpp)
+# add_library(loss_function ${MLFS_INCLUDE}/nn/loss_function.hpp
+#                           ${MLFS_SRC}/nn/loss_function.cpp)
+
 add_library(
   tensor
   ${MLFS_INCLUDE}/nn/tensor.hpp ${MLFS_SRC}/nn/tensor.cpp
   ${MLFS_INCLUDE}/nn/storage.hpp ${MLFS_SRC}/nn/storage.cpp
   ${MLFS_INCLUDE}/nn/utils.hpp ${MLFS_SRC}/nn/utils.cpp)
-add_library(autograd ${MLFS_INCLUDE}/nn/autograd.hpp
-                     ${MLFS_SRC}/nn/autograd.cpp)
-target_link_libraries(tensor autograd)
+
+# add_library(autograd ${MLFS_INCLUDE}/nn/autograd.hpp
+#                      ${MLFS_SRC}/nn/autograd.cpp)
+# target_link_libraries(tensor autograd)
 
 # examples
 if(MLFS_BUILD_EXAMPLES)

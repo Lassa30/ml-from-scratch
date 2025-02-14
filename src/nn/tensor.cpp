@@ -62,7 +62,6 @@ Tensor Tensor::TensorImpl::T() {
 bool Tensor::TensorImpl::empty() const noexcept {
   return storage_->data() == nullptr;
 }
-/*TEST 2*/
 
 /*-----------------------------------------------------
 __Tensor__
@@ -86,8 +85,5 @@ const std::shared_ptr<std::vector<float>> Tensor::data() const noexcept {
 bool Tensor::empty() const noexcept { return impl_->empty(); }
 Tensor Tensor::T() { return impl_->T(); }
 
-/*
-TEST 2
-*/
 }  // namespace nn
 }  // namespace mlfs
