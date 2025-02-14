@@ -8,9 +8,8 @@ project(ml-from-scratch)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
-set(MLFS_BUILD_EXAMPLES DEFAULT FALSE)
-set(MLFS_BUILD_TESTS DEFAULT FALSE)
-find_package(Eigen3 REQUIRED)
+option(MLFS_BUILD_EXAMPLES FALSE)
+option(MLFS_BUILD_TESTS TRUE)
 
 # mlfs cmake variables
 set(MLFS_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -19,21 +18,28 @@ include_directories(${MLFS_INCLUDE})
 set(MLFS_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # naive_bayes
+find_package(Eigen3 REQUIRED)
 add_library(naive_bayes ${MLFS_INCLUDE}/models/naive_bayes.hpp
                         ${MLFS_SRC}/models/naive_bayes.cpp)
 target_link_libraries(naive_bayes Eigen3::Eigen)
 
-# nn
-add_library(model ${MLFS_INCLUDE}/nn/model.hpp ${MLFS_SRC}/nn/model.cpp)
-add_library(optimizer ${MLFS_INCLUDE}/nn/optimizer.hpp
-                      ${MLFS_SRC}/nn/optimizer.cpp)
-add_library(layers ${MLFS_INCLUDE}/nn/layers.hpp ${MLFS_SRC}/nn/layers.cpp)
-add_library(loss_function ${MLFS_INCLUDE}/nn/loss_function.hpp
-                          ${MLFS_SRC}/nn/loss_function.cpp)
-add_library(tensor ${MLFS_INCLUDE}/nn/tensor.hpp ${MLFS_SRC}/nn/tensor.cpp)
-add_library(autograd ${MLFS_INCLUDE}/nn/autograd.hpp
-                     ${MLFS_SRC}/nn/autograd.cpp)
-target_link_libraries(tensor autograd)
+
+# add_library(model ${MLFS_INCLUDE}/nn/model.hpp ${MLFS_SRC}/nn/model.cpp)
+# add_library(optimizer ${MLFS_INCLUDE}/nn/optimizer.hpp
+#                       ${MLFS_SRC}/nn/optimizer.cpp)
+# add_library(layers ${MLFS_INCLUDE}/nn/layers.hpp ${MLFS_SRC}/nn/layers.cpp)
+# add_library(loss_function ${MLFS_INCLUDE}/nn/loss_function.hpp
+#                           ${MLFS_SRC}/nn/loss_function.cpp)
+
+add_library(
+  tensor
+  ${MLFS_INCLUDE}/nn/tensor.hpp ${MLFS_SRC}/nn/tensor.cpp
+  ${MLFS_INCLUDE}/nn/storage.hpp ${MLFS_SRC}/nn/storage.cpp
+  ${MLFS_INCLUDE}/nn/utils.hpp ${MLFS_SRC}/nn/utils.cpp)
+
+# add_library(autograd ${MLFS_INCLUDE}/nn/autograd.hpp
+#                      ${MLFS_SRC}/nn/autograd.cpp)
+# target_link_libraries(tensor autograd)
 
 # examples
 if(MLFS_BUILD_EXAMPLES)
@@ -43,16 +49,7 @@ if(MLFS_BUILD_EXAMPLES)
 endif()
 
 if(MLFS_BUILD_TESTS)
-  set(no_dev_warnings_backup "$CACHE{CMAKE_SUPPRESS_DEVELOPER_WARNINGS}")
-  set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS
-      ON
-      CACHE INTERNAL "" FORCE)
-
   add_subdirectory(doctest)
-
-  set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS
-      ${no_dev_warnings_backup}
-      CACHE INTERNAL "" FORCE)
-
+  option(DOCTEST_NO_INSTALL ON)
   add_subdirectory(test)
 endif()

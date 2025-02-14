@@ -35,4 +35,5 @@
 .vscode
 build
 buildDbg
+debug
 .editorconfig
