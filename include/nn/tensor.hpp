@@ -24,50 +24,55 @@ public:
   const Stride& stride() const noexcept;
   const Shape& shape() const noexcept;
 
-  int64_t stride(int64_t dim) const;
-  int64_t shape(int64_t dim) const;
+  std::int64_t stride(std::int64_t dim) const;
+  std::int64_t shape(std::int64_t dim) const;
 
-  int64_t offset() const noexcept;
-  int64_t numel() const noexcept;
-  int64_t memsize() const noexcept;
+  std::int64_t offset() const noexcept;
+  std::int64_t numel() const noexcept;
+  std::int64_t memsize() const noexcept;
+  bool empty() const noexcept;
+
   const std::shared_ptr<std::vector<float>> data() const noexcept;
 
 public:
-  Tensor T();
-  bool empty() const noexcept;
+  Tensor transpose();
+  Tensor permute();
 };
 
 class Tensor::TensorImpl {
 private:
-  Tensor& tensor_;
-
-  Stride stride_;
   Shape shape_;
-  int64_t offset_;
+  Stride stride_;
+  std::int64_t offset_;
 
   std::shared_ptr<Storage> storage_;
 
 public:
-  TensorImpl(Tensor& tensor);
-  TensorImpl(Tensor& tensor, const Shape& shape);
+  TensorImpl();
+  TensorImpl(const Shape& shape);
+  TensorImpl(const TensorImpl&) = default;
+  TensorImpl(TensorImpl&&) noexcept = default;
 
   const Stride& stride() const noexcept;
   const Shape& shape() const noexcept;
 
-  int64_t stride(int64_t dim) const;
-  int64_t shape(int64_t dim) const;
+  std::int64_t stride(std::int64_t dim) const;
+  std::int64_t shape(std::int64_t dim) const;
 
-  int64_t offset() const noexcept;
-  int64_t numel() const noexcept;
-  int64_t memsize() const noexcept;
+  std::int64_t offset() const noexcept;
+  std::int64_t numel() const noexcept;
+  std::int64_t memsize() const noexcept;
 
   const std::shared_ptr<std::vector<float>> data() const noexcept;
 
-  Tensor T();
+  TensorImpl transpose();
+  TensorImpl permute();
+
   bool empty() const noexcept;
 
 private:
   bool checkShapeStrideValidity();
+  Stride defaultStride(const Shape& shape);
 };
 
 namespace tensor {

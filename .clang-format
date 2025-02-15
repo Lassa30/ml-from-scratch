@@ -10,3 +10,5 @@ SortIncludes: true
 IncludeBlocks: Preserve
 UseTab: Never
 ReflowComments: true
+AllowBreakBeforeNoexceptSpecifier: OnlyWithParen
+PenaltyReturnTypeOnItsOwnLine: 25
