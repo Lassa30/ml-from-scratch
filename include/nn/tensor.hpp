@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+using std::int64_t, std::uint64_t;
+
 namespace mlfs {
 
 namespace nn {

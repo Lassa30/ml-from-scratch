@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-
 class Shape {
 public:
   Shape() : data_{} {}

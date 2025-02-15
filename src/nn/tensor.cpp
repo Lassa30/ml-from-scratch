@@ -2,8 +2,6 @@
 
 #include <string>
 
-using std::shared_ptr;
-
 namespace mlfs {
 namespace nn {
 
@@ -79,6 +77,7 @@ const std::shared_ptr<std::vector<float>> Tensor::data() const noexcept {
   return impl_->data();
 }
 bool Tensor::empty() const noexcept { return impl_->empty(); }
+  
 Tensor Tensor::transpose() {
   auto tensor_tmp = Tensor();
   tensor_tmp.impl_ = std::make_shared<Tensor::TensorImpl>(impl_->transpose());

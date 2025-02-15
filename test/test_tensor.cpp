@@ -35,6 +35,7 @@ TEST_CASE("shape, stride, offset for an empty tensor.") {
   SUBCASE("numel, memsize") { CHECK(numel_is_zero * memsize_is_zero); }
 }
 
+
 TEST_CASE("Shape and Stride alignment.") {
   std::vector<std::pair<std::vector<std::int64_t>, std::vector<std::int64_t>>>
       shape_and_stride = {{{}, {}},         {{1}, {1}},
@@ -92,6 +93,7 @@ TEST_CASE("Shape and Stride alignment.") {
 //     CHECK(checkStride(a_T, {1, 1}));
 //   }
 // }
+
 
 TEST_CASE("Tensor resize") {}
 
