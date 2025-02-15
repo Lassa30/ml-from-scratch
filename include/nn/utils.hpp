@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cstdint>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -47,6 +48,12 @@ public:
 
   const std::vector<std::int64_t>& data() const noexcept { return data_; }
 
+  Shape transpose() {
+    auto data_cp = data_;
+    std::reverse(data_cp.begin(), data_cp.end());
+    return Shape(data_cp);
+  }
+
 private:
   bool ShapeIsValid(const std::vector<std::int64_t>& given_shape) {
     return given_shape.empty() ||
@@ -62,16 +69,17 @@ public:
   Stride(const std::vector<std::int64_t>& stride) : data_{stride} {}
 
   Stride(const Shape& shape) {
-    if (!shape.empty()) {
-      int dims = shape.data().size();
-      data_ = std::vector<std::int64_t>(dims, 1);
-      std::int64_t current_stride = 1;
-      for (int ind = dims - 1; ind >= 0; --ind) {
-        stride_vector[ind] = current_stride;
-        current_stride *= shape[ind];
-      }
+    if (shape.empty()) {
+      data_ = std::vector<std::int64_t>();
+      return;
     }
-    data_ = std::vector<std::int64_t>();
+    int dims = shape.data().size();
+    data_ = std::vector<std::int64_t>(dims, 1);
+    std::int64_t current_stride = 1;
+    for (int ind = dims - 1; ind >= 0; --ind) {
+      data_[ind] = current_stride;
+      current_stride *= shape[ind];
+    }
   }
 
   Stride(const Stride&) = default;

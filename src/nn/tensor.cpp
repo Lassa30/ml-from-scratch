@@ -10,16 +10,11 @@ namespace nn {
 /*-----------------------------------------------------
 __TensorImpl__
 -----------------------------------------------------*/
-Tensor::TensorImpl::TensorImpl(Tensor& tensor)
-    : tensor_{tensor}
-    , shape_{}
-    , stride_{}
-    , offset_{-1}
-    , storage_{std::make_shared<Storage>()} {}
+Tensor::TensorImpl::TensorImpl()
+    : shape_{}, stride_{}, offset_{-1}, storage_{std::make_shared<Storage>()} {}
 
-Tensor::TensorImpl::TensorImpl(Tensor& tensor, const Shape& shape)
-    : tensor_{tensor}
-    , shape_{shape}
+Tensor::TensorImpl::TensorImpl(const Shape& shape)
+    : shape_{shape}
     , stride_{shape}
     , offset_{0}
     , storage_{std::make_shared<Storage>(shape)} {}
@@ -51,14 +46,13 @@ int64_t Tensor::TensorImpl::memsize() const noexcept {
   return numel() * sizeof(float);
 }
 
-const std::vector<float>& Tensor::TensorImpl::data() const noexcept {
+const std::shared_ptr<std::vector<float>>
+Tensor::TensorImpl::data() const noexcept {
   return storage_->data();
 }
 
-Tensor::TensorImpl Tensor::TensorImpl::T() {
-  auto tensor_copy = *this;
-
-  tensor_copy.shape_ =
+Tensor::TensorImpl Tensor::TensorImpl::transpose() {
+  return TensorImpl(shape_.transpose());
 }
 
 bool Tensor::TensorImpl::empty() const noexcept {
@@ -68,11 +62,9 @@ bool Tensor::TensorImpl::empty() const noexcept {
 /*-----------------------------------------------------
 __Tensor__
 -----------------------------------------------------*/
-Tensor::Tensor(const TensorImpl& impl)
-    : impl_{std::make_shared<Tensor::TensorImpl>(impl)} {}
-Tensor::Tensor() : impl_{std::make_shared<TensorImpl>(*this)} {}
+Tensor::Tensor() : impl_{std::make_shared<TensorImpl>()} {}
 Tensor::Tensor(const Shape& shape)
-    : impl_{std::make_shared<TensorImpl>(*this, shape)} {}
+    : impl_{std::make_shared<TensorImpl>(shape)} {}
 
 const Stride& Tensor::stride() const noexcept { return impl_->stride(); }
 int64_t Tensor::stride(int64_t dim) const { return impl_->stride(dim); }
@@ -83,11 +75,15 @@ int64_t Tensor::shape(int64_t dim) const { return impl_->shape(dim); }
 int64_t Tensor::offset() const noexcept { return impl_->offset(); }
 int64_t Tensor::numel() const noexcept { return impl_->numel(); }
 int64_t Tensor::memsize() const noexcept { return impl_->memsize(); }
-const shared_ptr<std::vector<float>> Tensor::data() const noexcept {
+const std::shared_ptr<std::vector<float>> Tensor::data() const noexcept {
   return impl_->data();
 }
 bool Tensor::empty() const noexcept { return impl_->empty(); }
-Tensor Tensor::T() { return Tensor(impl_->T()); }
+Tensor Tensor::transpose() {
+  auto tensor_tmp = Tensor();
+  tensor_tmp.impl_ = std::make_shared<Tensor::TensorImpl>(impl_->transpose());
+  return tensor_tmp;
+}
 
 }  // namespace nn
 }  // namespace mlfs

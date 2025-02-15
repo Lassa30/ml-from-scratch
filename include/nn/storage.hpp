@@ -32,7 +32,6 @@ public:
 
 class Storage::StorageImpl {
 private:
-  Storage& storage_;
   std::shared_ptr<std::vector<float>> data_;
   bool checkSize(const std::vector<float>& data,
                  const Shape& shape) const noexcept;
@@ -44,10 +43,9 @@ public:
   StorageImpl(StorageImpl&&) noexcept = default;
   StorageImpl& operator=(StorageImpl&&) noexcept = default;
 
-  StorageImpl(Storage& storage);
-  StorageImpl(Storage& storage, const Shape& shape);
-  StorageImpl(Storage& storage, const std::vector<float>& data,
-              const Shape& shape);
+  StorageImpl();
+  StorageImpl(const Shape& shape);
+  StorageImpl(const std::vector<float>& data, const Shape& shape);
 
   ~StorageImpl() = default;
   const std::shared_ptr<std::vector<float>> data();

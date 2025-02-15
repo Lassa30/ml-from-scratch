@@ -5,12 +5,11 @@
 
 using namespace mlfs::nn;
 
-bool checkShape(const Tensor& tensor,
-                const std::vector<std::int64_t> desired) const noexcept {
+bool checkShape(const Tensor& tensor, const std::vector<std::int64_t> desired) {
   return tensor.shape().data() == desired;
 }
 bool checkStride(const Tensor& tensor,
-                 const std::vector<std::int64_t> desired) const noexcept {
+                 const std::vector<std::int64_t> desired) {
   return tensor.stride().data() == desired;
 }
 
@@ -36,11 +35,18 @@ TEST_CASE("shape, stride, offset for an empty tensor.") {
   SUBCASE("numel, memsize") { CHECK(numel_is_zero * memsize_is_zero); }
 }
 
-TEST_CASE("Shape and Stride alignment") {
-  auto a = Tensor(Shape({5, 1}));
+TEST_CASE("Shape and Stride alignment.") {
+  std::vector<std::pair<std::vector<std::int64_t>, std::vector<std::int64_t>>>
+      shape_and_stride = {{{}, {}},         {{1}, {1}},
+                          {{1, 1}, {1, 1}}, {{1, 1, 1}, {1, 1, 1}},
+                          {{5, 5}, {5, 1}}, {{7, 15}, {15, 1}},
+                          {{5, 1}, {1, 1}}, {{2, 2, 2, 2}, {8, 4, 2, 1}}};
 
-  CHECK(checkShape(a, {5, 1}));
-  CHECK(checkStride(a, {1, 1}));
+  for (auto& [shape, stride] : shape_and_stride) {
+    auto a = Tensor(Shape(shape));
+    CHECK(checkShape(a, shape));
+    CHECK(checkStride(a, stride));
+  }
 }
 
 // TODO: refactor all those subcases to be the only function call.

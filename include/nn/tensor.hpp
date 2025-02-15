@@ -14,9 +14,7 @@ namespace nn {
 class Tensor {
 private:
   class TensorImpl;
-
   std::shared_ptr<TensorImpl> impl_;
-  Tensor(const TensorImpl& TensorImpl);
 
 public:
   Tensor();
@@ -41,8 +39,6 @@ public:
 
 class Tensor::TensorImpl {
 private:
-  Tensor& tensor_;
-
   Shape shape_;
   Stride stride_;
   std::int64_t offset_;
@@ -50,8 +46,10 @@ private:
   std::shared_ptr<Storage> storage_;
 
 public:
-  TensorImpl(Tensor& tensor);
-  TensorImpl(Tensor& tensor, const Shape& shape);
+  TensorImpl();
+  TensorImpl(const Shape& shape);
+  TensorImpl(const TensorImpl&) = default;
+  TensorImpl(TensorImpl&&) noexcept = default;
 
   const Stride& stride() const noexcept;
   const Shape& shape() const noexcept;
@@ -65,7 +63,9 @@ public:
 
   const std::shared_ptr<std::vector<float>> data() const noexcept;
 
-  TensorImpl T();
+  TensorImpl transpose();
+  TensorImpl permute();
+
   bool empty() const noexcept;
 
 private:
